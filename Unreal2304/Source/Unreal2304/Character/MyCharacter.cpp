@@ -20,6 +20,14 @@ AMyCharacter::AMyCharacter()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP(TEXT("'/Game/Resources/AnimStarterPack/ABP_Character.ABP_Character_C'"));
+
+	if (AnimBP.Succeeded())
+	{
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	}
+
 	// Camera Component Settings
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
