@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
 #include "Item.generated.h"
 
 /**
@@ -56,12 +57,12 @@ struct FItemData
 };
 
 UCLASS()
-class UNREAL2304_API UItem : public UObject
+class UNREAL2304_API AItem : public AActor
 {
 	GENERATED_BODY()
 	
 public:
 private:
-	UPROPERTY(meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;
 };
