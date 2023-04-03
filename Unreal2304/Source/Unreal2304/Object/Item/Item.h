@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-
+#include "../../Interface/Interactive.h"
 #include "Item.generated.h"
 
 /**
@@ -57,7 +57,7 @@ struct FItemData
 };
 
 UCLASS()
-class UNREAL2304_API AItem : public AActor
+class UNREAL2304_API AItem : public AActor, public IInteractive
 {
 	GENERATED_BODY()
 	
@@ -65,4 +65,7 @@ public:
 private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;
+
+	// Inherited via IInteractive
+	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
 };

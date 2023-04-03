@@ -4,6 +4,7 @@
 #include "../Character/MyCharacter.h"
 #include "Math/RotationMatrix.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../Interface/Interactive.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -14,7 +15,6 @@ AMyCharacter::AMyCharacter()
 	// Camera Component Settings
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-	SpringArmComponent->SetRelativeRotation(FRotator(-90, 90, 0));
 	SpringArmComponent->bUsePawnControlRotation = true;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
@@ -25,7 +25,9 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SpringArmComponent->SetupAttachment(GetMesh(), "head");
+	FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true);
+	SpringArmComponent->AttachToComponent(GetMesh(), AttachRules, "head");
+	//SpringArmComponent->ResetRelativeTransform();
 }
 
 // Called every frame
@@ -55,7 +57,13 @@ void AMyCharacter::CheckInteract()
 	FHitResult OutHit;
 	TArray<TEnumAsByte<ETraceTypeQuery>> QueryArray;
 	QueryArray.Add(UEngineTypes::ConvertToTraceType(ECC_Visibility));
-	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartPoint, EndPoint, InteractCheckRadius, ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForOneFrame, OutHit, true);
+	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartPoint, EndPoint, InteractCheckRadius, ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForOneFrame, OutHit, true))
+	{
+		if (TObjectPtr<IInteractive> Interface = Cast<IInteractive>(OutHit.GetActor()))
+		{
+			Interface->Interact(this);
+		}
+	}
 }
 
 void AMyCharacter::MoveForward(float Value)
