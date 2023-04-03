@@ -3,3 +3,9 @@
 
 #include "../Widget/MenuBoxWidget.h"
 
+void UMenuBoxWidget::Initialize(TArray<FText>& MenuText)
+{
+	for (FText& Text : MenuText)
+	{
+	}
+}

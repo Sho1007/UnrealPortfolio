@@ -64,6 +64,7 @@ class UNREAL2304_API AItem : public AActor, public IInteractive
 public:
 	// Inherited via IInteractive
 	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
+	virtual TArray<FText>& GetMenuText() override;
 private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;

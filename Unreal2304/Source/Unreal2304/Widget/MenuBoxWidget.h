@@ -14,4 +14,6 @@ class UNREAL2304_API UMenuBoxWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void Initialize(TArray<FText>& MenuText);
 };

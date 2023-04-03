@@ -84,7 +84,7 @@ void AMyCharacter::CheckInteract()
 				}
 			}
 			InteractActor = OutHit.GetActor();
-			CreateMenuBoxWidget();
+			CreateMenuBoxWidget(Interface->GetMenuText());
 			Interface->Interact(this);
 
 			return;
@@ -99,7 +99,7 @@ void AMyCharacter::CheckInteract()
 	InteractActor = NULL;
 }
 
-void AMyCharacter::CreateMenuBoxWidget()
+void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& MenuText)
 {
 	if (MenuBoxWidgetClass->IsValidLowLevelFast())
 	{
