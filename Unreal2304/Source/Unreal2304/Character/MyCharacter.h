@@ -44,12 +44,13 @@ private:
 
 
 private:
+	// Component Var
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> CameraComponent;
 
-
+	// Movement Var
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bJumpButtonDown = false;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))

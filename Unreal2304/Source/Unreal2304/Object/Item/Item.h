@@ -62,10 +62,12 @@ class UNREAL2304_API AItem : public AActor, public IInteractive
 	GENERATED_BODY()
 	
 public:
+	// Inherited via IInteractive
+	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
 private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;
 
-	// Inherited via IInteractive
-	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TArray<FText> MenuText;
 };
