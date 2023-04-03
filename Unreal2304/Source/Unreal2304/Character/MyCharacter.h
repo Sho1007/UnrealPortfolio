@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+
 #include "MyCharacter.generated.h"
 
 UCLASS()
@@ -27,6 +31,20 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void LookUp(float Value);
+	void TurnRight(float Value);
+
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCameraComponent> CameraComponent;
+
+
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bJumpButtonDown = false;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))

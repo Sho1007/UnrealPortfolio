@@ -2,6 +2,7 @@
 
 
 #include "../Character/MyCharacter.h"
+#include "Math/RotationMatrix.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -9,6 +10,7 @@ AMyCharacter::AMyCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Skeletal Mesh Settings
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMesh(TEXT("'/Game/Characters/Mannequin_UE4/Meshes/SK_Mannequin.SK_Mannequin'"));
 
@@ -18,6 +20,15 @@ AMyCharacter::AMyCharacter()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
 
+	// Camera Component Settings
+
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
+	SpringArmComponent->SetupAttachment(GetMesh(), "head");
+	SpringArmComponent->SetRelativeRotation(FRotator(-90, 90, 0));
+	SpringArmComponent->bUsePawnControlRotation = true;
+
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
+	CameraComponent->SetupAttachment(SpringArmComponent);
 }
 
 // Called when the game starts or when spawned
@@ -39,5 +50,32 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AMyCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("Move Right / Left", this, &AMyCharacter::MoveRight);
+
+	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &AMyCharacter::LookUp);
+	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &AMyCharacter::TurnRight);
+}
+
+void AMyCharacter::MoveForward(float Value)
+{
+	FVector MoveDirection = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
+	AddMovementInput(MoveDirection, Value);
+}
+
+void AMyCharacter::MoveRight(float Value)
+{
+	FVector MoveDirection = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
+	AddMovementInput(MoveDirection, Value);
+}
+
+void AMyCharacter::LookUp(float Value)
+{
+	AddControllerPitchInput(Value);
+}
+
+void AMyCharacter::TurnRight(float Value)
+{
+	AddControllerYawInput(Value);
 }
 
