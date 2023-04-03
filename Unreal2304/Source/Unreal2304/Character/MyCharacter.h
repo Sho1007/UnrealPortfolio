@@ -7,6 +7,7 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
 
 #include "MyCharacter.generated.h"
 
@@ -33,6 +34,8 @@ public:
 
 private:
 	void CheckInteract();
+	void CreateMenuBoxWidget();
+	void DeleteMenuBoxWidget();
 
 // Movement Input Bind
 private:
@@ -59,4 +62,12 @@ private:
 	// Interact Var
 	float InteractCheckRadius = 5.0f;
 	float InteractCheckLength = 100.0f;
+	TObjectPtr<AActor> InteractActor;
+
+	// Interact Widget Var
+	TObjectPtr<UWidgetComponent> MenuBoxWidgetComponent;
+	TObjectPtr<UUserWidget> MenuBoxWidget;
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> MenuBoxWidgetClass;
 };
