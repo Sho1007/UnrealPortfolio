@@ -3,6 +3,7 @@
 
 #include "../Character/MyCharacter.h"
 #include "Math/RotationMatrix.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -50,7 +51,7 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	CheckInteract();
 }
 
 // Called to bind functionality to input
@@ -63,6 +64,17 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &AMyCharacter::LookUp);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &AMyCharacter::TurnRight);
+}
+
+void AMyCharacter::CheckInteract()
+{
+
+	FVector StartPoint = GetMesh()->GetSocketLocation("head");
+	FVector EndPoint = StartPoint + (CameraComponent->GetForwardVector() * InteractCheckLength);
+	FHitResult OutHit;
+	TArray<TEnumAsByte<ETraceTypeQuery>> QueryArray;
+	QueryArray.Add(UEngineTypes::ConvertToTraceType(ECC_Visibility));
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartPoint, EndPoint, InteractCheckRadius, ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForOneFrame, OutHit, true);
 }
 
 void AMyCharacter::MoveForward(float Value)

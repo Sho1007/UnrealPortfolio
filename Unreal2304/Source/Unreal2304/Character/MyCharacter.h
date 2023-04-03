@@ -30,6 +30,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+private:
+	void CheckInteract();
+
+// Movement Input Bind
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -49,4 +54,8 @@ private:
 	bool bJumpButtonDown = false;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bCrouchButtonDown = false;
+
+	// Interact Var
+	float InteractCheckRadius = 5.0f;
+	float InteractCheckLength = 100.0f;
 };
