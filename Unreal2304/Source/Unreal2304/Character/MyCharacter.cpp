@@ -10,29 +10,10 @@ AMyCharacter::AMyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Skeletal Mesh Settings
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMesh(TEXT("'/Game/Characters/Mannequin_UE4/Meshes/SK_Mannequin.SK_Mannequin'"));
-
-	if (SkeletalMesh.Succeeded())
-	{
-		GetMesh()->SetSkeletalMesh(SkeletalMesh.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
-	}
-
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP(TEXT("'/Game/Resources/AnimStarterPack/ABP_Character.ABP_Character_C'"));
-
-	if (AnimBP.Succeeded())
-	{
-		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
-	}
-
+	
 	// Camera Component Settings
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-	SpringArmComponent->SetupAttachment(GetMesh(), "head");
 	SpringArmComponent->SetRelativeRotation(FRotator(-90, 90, 0));
 	SpringArmComponent->bUsePawnControlRotation = true;
 
@@ -44,7 +25,7 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SpringArmComponent->SetupAttachment(GetMesh(), "head");
 }
 
 // Called every frame
