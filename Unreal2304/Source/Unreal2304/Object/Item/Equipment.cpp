@@ -3,3 +3,6 @@
 
 #include "../Item/Equipment.h"
 
+AEquipment::AEquipment(EEquipmentType Type) : EquipmentType(Type)
+{
+}

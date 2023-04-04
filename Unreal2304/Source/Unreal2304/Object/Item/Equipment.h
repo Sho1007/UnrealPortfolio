@@ -29,6 +29,9 @@ UCLASS()
 class UNREAL2304_API AEquipment : public AItem
 {
 	GENERATED_BODY()
+public:
+	AEquipment() {}
+	AEquipment(EEquipmentType Type);
 protected:
 	EEquipmentType EquipmentType;
 };
