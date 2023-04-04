@@ -12,6 +12,13 @@
 
 #include "MyCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EGunSlot : uint8
+{
+	Primary,
+	Secondary,
+};
+
 UCLASS()
 class UNREAL2304_API AMyCharacter : public ACharacter
 {
@@ -48,6 +55,10 @@ private:
 	void WheelUp();
 	void WheelDown();
 
+	// Gun
+private:
+	
+
 
 private:
 	// Component Var
@@ -70,6 +81,9 @@ private:
 	// Interact Widget Var
 	TObjectPtr<UWidgetComponent> MenuBoxWidgetComponent;
 	TObjectPtr<UMenuBoxWidget> MenuBoxWidget;
+
+	// Gun Var
+	EGunSlot CurrentGunSlot = EGunSlot::Primary;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

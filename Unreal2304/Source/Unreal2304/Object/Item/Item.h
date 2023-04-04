@@ -22,6 +22,21 @@ enum class EItemType : uint8
 };
 
 UENUM(BlueprintType)
+enum class EEquipmentType : uint8
+{
+	None,
+	Gun,
+	HeadGear,
+	HeadSet,
+	Face,
+	Rig,
+	Armor,
+	ArmorRig,
+	Magazine,
+	Size
+};
+
+UENUM(BlueprintType)
 enum class EItemState : uint8
 {
 	None,
@@ -65,7 +80,8 @@ public:
 	// Inherited via IInteractive
 	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
 	virtual TArray<FText>& GetMenuText() override;
-private:
+
+protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;
 

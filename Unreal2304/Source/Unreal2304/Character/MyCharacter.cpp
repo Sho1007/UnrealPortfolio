@@ -107,14 +107,14 @@ void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& MenuText)
 {
 	if (MenuBoxWidgetClass->IsValidLowLevelFast())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "4. MenuBox Widget Class is Valid");
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "4. MenuBox Widget Class is Valid");
 		MenuBoxWidget = Cast<UMenuBoxWidget>(CreateWidget(GetWorld(), MenuBoxWidgetClass));
 		MenuBoxWidget->Initialize(MenuText);
 		MenuBoxWidgetComponent->SetWidget(MenuBoxWidget);
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "5. MenuBox Widget Class is Not Valid");
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "5. MenuBox Widget Class is Not Valid");
 	}
 }
 
