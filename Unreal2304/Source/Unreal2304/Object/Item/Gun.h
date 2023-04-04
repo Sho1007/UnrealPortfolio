@@ -4,21 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "../Item/Equipment.h"
+#include "../Item/Magazine.h"
 #include "Gun.generated.h"
 
 /**
  * 
  */
-
-USTRUCT(BlueprintType)
-struct FGunData
-{
-	GENERATED_BODY()
-
-	// 개머리판 dATA
-	// 손잡이 DATA
-	// 탄창 DATA
-};
 
 UCLASS()
 class UNREAL2304_API AGun : public AEquipment
@@ -27,8 +18,17 @@ class UNREAL2304_API AGun : public AEquipment
 
 public:
 	AGun();
+
+	bool Fire();
+
 private:
 	// Component
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AMagazine> Magazine = NULL;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AActor> MuzzleFlash;
 };

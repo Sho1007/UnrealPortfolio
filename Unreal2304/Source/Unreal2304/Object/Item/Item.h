@@ -16,8 +16,7 @@ enum class EItemType : uint8
 {
 	None,
 	Equipment,
-	Consumable,
-	Ingredient,
+	Usable,
 	Size
 };
 
@@ -36,33 +35,31 @@ USTRUCT(BlueprintType)
 struct FItemInfo
 {
 	GENERATED_BODY()
-protected:
+
 	FString ItemName;
+	FIntPoint ItemSize;
 	TObjectPtr<UTexture2D> ItemImage;
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 	TObjectPtr<USkeletalMesh> StaticMesh;
-	FIntPoint ItemSize;
+	TSubclassOf<AItem> ItemClass;
 	EItemType ItemType;
 };
 
 // 아이템의 개별 정보
 USTRUCT(BlueprintType)
-struct FItemDataStruct
+struct FItemData
 {
 	GENERATED_BODY()
 
-	int32 ItemIndex;
-	FIntPoint InventoryPos;
-};
-
-UCLASS()
-class UNREAL2304_API UItemData : public UObject
-{
-	GENERATED_BODY()
-protected:
 	int32 ItemIndex;
 	FIntPoint InventoryPos;
 	EItemState ItemState;
+
+	TArray<int32> IntArray;
+	TArray<float> FloatArray;
+	TArray<bool> BoolArray;
+
+	TArray<FItemData> ChildData;
 };
 
 UCLASS()
@@ -75,11 +72,9 @@ public:
 	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
 	virtual TArray<FText>& GetMenuText() override;
 
-	// TArray<FItemData> Inventory;
-
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UItemData> ItemData;
+	FItemData ItemData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<FText> MenuText;
