@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Components/VerticalBox.h"
+
 #include "MenuBoxWidget.generated.h"
 
 /**
@@ -16,4 +19,12 @@ class UNREAL2304_API UMenuBoxWidget : public UUserWidget
 	
 public:
 	void Initialize(TArray<FText>& MenuText);
+	void ToggleChildAt(int32 ChildPos);
+	void Toggle(bool bIsDown);
+private:
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UVerticalBox> VB_MenuBox;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> MenuBoxChildWidgetClass;
+	uint32 CurrentPos = 0;
 };

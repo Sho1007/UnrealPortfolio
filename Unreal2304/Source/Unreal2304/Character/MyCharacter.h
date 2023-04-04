@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
+#include "../Widget/MenuBoxWidget.h"
 
 #include "MyCharacter.generated.h"
 
@@ -44,6 +45,9 @@ private:
 	void LookUp(float Value);
 	void TurnRight(float Value);
 
+	void WheelUp();
+	void WheelDown();
+
 
 private:
 	// Component Var
@@ -65,7 +69,7 @@ private:
 
 	// Interact Widget Var
 	TObjectPtr<UWidgetComponent> MenuBoxWidgetComponent;
-	TObjectPtr<UUserWidget> MenuBoxWidget;
+	TObjectPtr<UMenuBoxWidget> MenuBoxWidget;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

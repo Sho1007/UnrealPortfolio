@@ -35,6 +35,7 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true);
 	SpringArmComponent->AttachToComponent(GetMesh(), AttachRules, "head");
+	CameraComponent->SetRelativeLocation(FVector(10, 0, 0));
 	//SpringArmComponent->ResetRelativeTransform();
 }
 
@@ -55,6 +56,9 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &AMyCharacter::LookUp);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &AMyCharacter::TurnRight);
+
+	PlayerInputComponent->BindAction("Wheel Up", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelUp);
+	PlayerInputComponent->BindAction("Wheel Down", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelDown);
 }
 
 void AMyCharacter::CheckInteract()
@@ -70,7 +74,7 @@ void AMyCharacter::CheckInteract()
 		if (TObjectPtr<IInteractive> Interface = Cast<IInteractive>(OutHit.GetActor()))
 		{
 			// Check Already Has Old Actor
-			if (InteractActor->IsValidLowLevelFast())
+			if (InteractActor != NULL && InteractActor->IsValidLowLevelFast())
 			{
 				// IsSame Old Actor, New Actor
 				if (InteractActor == OutHit.GetActor())
@@ -91,12 +95,12 @@ void AMyCharacter::CheckInteract()
 		}
 	}
 
-	if (InteractActor->IsValidLowLevelFast())
+	if (InteractActor != NULL && InteractActor->IsValidLowLevelFast())
 	{
-		DeleteMenuBoxWidget();
 		// Todo : Detach Old InteractActor
+		DeleteMenuBoxWidget();
+		InteractActor = NULL;
 	}
-	InteractActor = NULL;
 }
 
 void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& MenuText)
@@ -104,7 +108,8 @@ void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& MenuText)
 	if (MenuBoxWidgetClass->IsValidLowLevelFast())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "4. MenuBox Widget Class is Valid");
-		MenuBoxWidget = CreateWidget(GetWorld(), MenuBoxWidgetClass);
+		MenuBoxWidget = Cast<UMenuBoxWidget>(CreateWidget(GetWorld(), MenuBoxWidgetClass));
+		MenuBoxWidget->Initialize(MenuText);
 		MenuBoxWidgetComponent->SetWidget(MenuBoxWidget);
 	}
 	else
@@ -117,7 +122,7 @@ void AMyCharacter::DeleteMenuBoxWidget()
 {
 	if (MenuBoxWidget->IsValidLowLevelFast())
 	{
-		MenuBoxWidget->RemoveFromParent();
+		MenuBoxWidget->RemoveFromRoot();
 	}
 	MenuBoxWidget = NULL;
 	MenuBoxWidgetComponent->SetWidget(NULL);
@@ -143,5 +148,21 @@ void AMyCharacter::LookUp(float Value)
 void AMyCharacter::TurnRight(float Value)
 {
 	AddControllerYawInput(Value);
+}
+
+void AMyCharacter::WheelUp()
+{
+	if (MenuBoxWidget != NULL && MenuBoxWidget->IsValidLowLevelFast())
+	{
+		MenuBoxWidget->Toggle(false);
+	}
+}
+
+void AMyCharacter::WheelDown()
+{
+	if (MenuBoxWidget != NULL && MenuBoxWidget->IsValidLowLevelFast())
+	{
+		MenuBoxWidget->Toggle(true);
+	}
 }
 
