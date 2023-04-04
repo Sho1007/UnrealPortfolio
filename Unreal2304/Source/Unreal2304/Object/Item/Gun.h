@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "../Item/Equipment.h"
+
 #include "../Item/Magazine.h"
+#include "Components/BoxComponent.h"
+
 #include "Gun.generated.h"
 
 /**
@@ -19,12 +22,16 @@ class UNREAL2304_API AGun : public AEquipment
 public:
 	AGun();
 
+	virtual void BeginPlay() override;
+
 	bool Fire();
 
 private:
 	// Component
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBoxComponent> BoxComponent;
 	
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AMagazine> Magazine = NULL;

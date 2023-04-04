@@ -7,6 +7,17 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 {
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	SetRootComponent(SkeletalMeshComponent);
+	
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
+	BoxComponent->SetupAttachment(RootComponent);
+	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AGun::BeginPlay()
+{
+	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SkeletalMeshComponent->SetSimulatePhysics(true);
 }
 
 bool AGun::Fire()
