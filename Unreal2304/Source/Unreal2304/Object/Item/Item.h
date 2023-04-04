@@ -22,21 +22,6 @@ enum class EItemType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EEquipmentType : uint8
-{
-	None,
-	Gun,
-	HeadGear,
-	HeadSet,
-	Face,
-	Rig,
-	Armor,
-	ArmorRig,
-	Magazine,
-	Size
-};
-
-UENUM(BlueprintType)
 enum class EItemState : uint8
 {
 	None,

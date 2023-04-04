@@ -9,9 +9,26 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EEquipmentType : uint8
+{
+	None,
+	Gun,
+	HeadGear,
+	HeadSet,
+	Face,
+	Rig,
+	Armor,
+	ArmorRig,
+	Magazine,
+	Size
+};
+
 UCLASS()
 class UNREAL2304_API AEquipment : public AItem
 {
 	GENERATED_BODY()
-	
+protected:
+	EEquipmentType EquipmentType;
 };
