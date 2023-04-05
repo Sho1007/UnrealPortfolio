@@ -33,9 +33,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
 	
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<AMagazine> Magazine = NULL;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AMagazine> Magazine;
 
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> MuzzleFlash;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FName FirePosName;
 };

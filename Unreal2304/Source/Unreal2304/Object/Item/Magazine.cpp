@@ -12,6 +12,7 @@ AMagazine::AMagazine() : AEquipment(EEquipmentType::Magazine)
 TObjectPtr<ABullet> AMagazine::Pop()
 {
 	if (IsEmpty()) return NULL;
+	UE_LOG(LogTemp, Warning, TEXT("Pop Called Without IsEmpty"));
 
 	TObjectPtr<ABullet> Bullet = Bullets[Bullets.Num() - 1];
 	Bullets.RemoveAt(Bullets.Num() - 1);

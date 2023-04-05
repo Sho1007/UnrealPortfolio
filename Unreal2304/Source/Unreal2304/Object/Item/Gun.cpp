@@ -28,9 +28,8 @@ bool AGun::Fire()
 		return false;
 	}
 
-	FName FirePosName;
 	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
-	Bullet->Fire(FireTransform.GetLocation(), FireTransform.GetRotation().GetForwardVector());
+	Bullet->Fire(FireTransform);
 
 	if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
 	{

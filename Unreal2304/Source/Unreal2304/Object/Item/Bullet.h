@@ -20,7 +20,7 @@ class UNREAL2304_API ABullet : public AItem
 	
 public:
 	ABullet();
-	void Fire(FVector StartPos, FVector Direction);
+	void Fire(FTransform FireTransform);
 private:
 	UPROPERTY(meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
@@ -28,6 +28,6 @@ private:
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> SphereComponent;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float Speed = 1000.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float Speed = 10000.0f;
 };

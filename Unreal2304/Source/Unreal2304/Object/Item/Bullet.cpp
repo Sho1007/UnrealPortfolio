@@ -5,22 +5,28 @@
 
 ABullet::ABullet()
 {
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StataicMeshComponent");
-	SetRootComponent(StaticMeshComponent);
-	
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
-	SphereComponent->SetupAttachment(RootComponent);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//PrimaryActorTick.bCanEverTick = true;
 
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	SphereComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// Todo : Hit 할때 호출함 함수 만들고 추가
+	// SphereComponent->OnComponentHit.AddDynamic(this, &ABullet::OnHit);
+	SetRootComponent(SphereComponent);
+
+
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StataicMeshComponent");
+	StaticMeshComponent->SetupAttachment(RootComponent);
+	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
+	ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
+	ProjectileMovementComponent->InitialSpeed = Speed;
+	ProjectileMovementComponent->MaxSpeed = Speed;
 }
 
-void ABullet::Fire(FVector StartPos, FVector Direction)
+void ABullet::Fire(FTransform FireTransform)
 {
-	SetActorLocation(StartPos);
-
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-	Direction.Normalize();
-	ProjectileMovementComponent->SetVelocityInLocalSpace(Direction * Speed);
+	SetActorLocation(FireTransform.GetLocation());
+	SetActorRotation(FireTransform.GetRotation());	
+	ProjectileMovementComponent->SetVelocityInLocalSpace(GetActorForwardVector() * Speed);
 }
