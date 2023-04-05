@@ -9,6 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "../Widget/MenuBoxWidget.h"
+#include "../Object/Item/Gun.h"
+#include "../Interface/Interactive.h"
 
 #include "MyCharacter.generated.h"
 
@@ -20,7 +22,7 @@ enum class EGunSlot : uint8
 };
 
 UCLASS()
-class UNREAL2304_API AMyCharacter : public ACharacter
+class UNREAL2304_API AMyCharacter : public ACharacter, public IInteractive
 {
 	GENERATED_BODY()
 
@@ -55,10 +57,31 @@ private:
 	void WheelUp();
 	void WheelDown();
 
-	// Gun
-private:
-	
+	void Crouch();
+	void JumpPressed();
+	void JumpReleased();
 
+	void InteractPressed();
+
+	void AttackPressed();
+
+private:
+	bool EquipItem(TObjectPtr<AEquipment> Item);
+
+// Gun
+public:
+	bool PickupItem(FItemData ItemData);
+	bool EquipGun(TObjectPtr<AGun> GunActor);
+private:
+	void UpdateGunAttachment();
+	TObjectPtr<AGun> EquippedGun();
+	TObjectPtr<AGun> StowedGun();
+
+	
+public:
+	// Inherited via IInteractive
+	virtual void Interact(TObjectPtr<AActor> Actor, uint8 SelectNum) override;
+	virtual TArray<FText>& GetMenuText() override;
 
 private:
 	// Component Var
@@ -74,9 +97,12 @@ private:
 	bool bCrouchButtonDown = false;
 
 	// Interact Var
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float InteractCheckRadius = 5.0f;
-	float InteractCheckLength = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float InteractCheckLength = 120.0f;
 	TObjectPtr<AActor> InteractActor;
+	TArray<FText> MenuText;
 
 	// Interact Widget Var
 	TObjectPtr<UWidgetComponent> MenuBoxWidgetComponent;
@@ -84,6 +110,8 @@ private:
 
 	// Gun Var
 	EGunSlot CurrentGunSlot = EGunSlot::Primary;
+	TObjectPtr<AGun> PrimaryGun = NULL;
+	TObjectPtr<AGun> SecondaryGun = NULL;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

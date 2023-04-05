@@ -21,10 +21,11 @@ public:
 	void Initialize(TArray<FText>& MenuText);
 	void ToggleChildAt(int32 ChildPos);
 	void Toggle(bool bIsDown);
+	uint8 GetSelectNum() { return CurrentPos; }
 private:
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UVerticalBox> VB_MenuBox;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxChildWidgetClass;
-	uint32 CurrentPos = 0;
+	uint8 CurrentPos = 0;
 };

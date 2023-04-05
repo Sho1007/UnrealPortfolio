@@ -29,5 +29,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> SphereComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float Speed;
+	float Speed = 1000.0f;
 };

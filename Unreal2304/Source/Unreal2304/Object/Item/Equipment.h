@@ -32,6 +32,8 @@ class UNREAL2304_API AEquipment : public AItem
 public:
 	AEquipment() {}
 	AEquipment(EEquipmentType Type);
+
+	EEquipmentType GetEquipmentType() { return EquipmentType; }
 protected:
 	EEquipmentType EquipmentType;
 };

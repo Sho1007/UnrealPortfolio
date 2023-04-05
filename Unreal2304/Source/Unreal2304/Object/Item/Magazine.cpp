@@ -3,6 +3,12 @@
 
 #include "../Item/Magazine.h"
 
+AMagazine::AMagazine() : AEquipment(EEquipmentType::Magazine)
+{
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
+	SetRootComponent(StaticMeshComponent);
+}
+
 TObjectPtr<ABullet> AMagazine::Pop()
 {
 	if (IsEmpty()) return NULL;

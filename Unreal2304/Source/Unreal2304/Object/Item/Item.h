@@ -7,7 +7,7 @@
 #include "../../Interface/Interactive.h"
 #include "Item.generated.h"
 
-/**
+/*
  * 
  */
 
@@ -66,11 +66,13 @@ UCLASS()
 class UNREAL2304_API AItem : public AActor, public IInteractive
 {
 	GENERATED_BODY()
-	
+
 public:
 	// Inherited via IInteractive
-	virtual void Interact(TObjectPtr<AMyCharacter> Character) override;
+	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override {}
 	virtual TArray<FText>& GetMenuText() override;
+
+	EItemState GetItemState() { return ItemData.ItemState; }
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

@@ -5,9 +5,16 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 
-#include "../Character/MyCharacter.h"
-
 #include "Interactive.generated.h"
+
+UENUM(BlueprintType)
+enum class ECharacterInteract : uint8
+{
+	None,
+	PickupItem,
+	PickupEquipment,
+	Size
+};
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -25,6 +32,6 @@ class UNREAL2304_API IInteractive
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Interact(TObjectPtr<AMyCharacter> Character) = 0;
+	virtual void Interact(TObjectPtr<AActor> Actor, uint8 SelectNum) = 0;
 	virtual TArray<FText>& GetMenuText() = 0;
 };

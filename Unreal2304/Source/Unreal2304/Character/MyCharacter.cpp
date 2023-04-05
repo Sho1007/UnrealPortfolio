@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "../Interface/Interactive.h"
 #include "../Widget/MenuBoxWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -59,6 +60,14 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAction("Wheel Up", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelUp);
 	PlayerInputComponent->BindAction("Wheel Down", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelDown);
+
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AMyCharacter::Crouch);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMyCharacter::JumpPressed);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AMyCharacter::JumpReleased);
+
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &AMyCharacter::InteractPressed);
+
+	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AMyCharacter::AttackPressed);
 }
 
 void AMyCharacter::CheckInteract()
@@ -89,7 +98,6 @@ void AMyCharacter::CheckInteract()
 			}
 			InteractActor = OutHit.GetActor();
 			CreateMenuBoxWidget(Interface->GetMenuText());
-			Interface->Interact(this);
 
 			return;
 		}
@@ -103,13 +111,13 @@ void AMyCharacter::CheckInteract()
 	}
 }
 
-void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& MenuText)
+void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& _MenuText)
 {
 	if (MenuBoxWidgetClass->IsValidLowLevelFast())
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "4. MenuBox Widget Class is Valid");
 		MenuBoxWidget = Cast<UMenuBoxWidget>(CreateWidget(GetWorld(), MenuBoxWidgetClass));
-		MenuBoxWidget->Initialize(MenuText);
+		MenuBoxWidget->Initialize(_MenuText);
 		MenuBoxWidgetComponent->SetWidget(MenuBoxWidget);
 	}
 	else
@@ -164,5 +172,139 @@ void AMyCharacter::WheelDown()
 	{
 		MenuBoxWidget->Toggle(true);
 	}
+}
+
+void AMyCharacter::Crouch()
+{
+	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxWalkSpeed = bCrouchButtonDown ? 270 : 100;
+
+	bCrouchButtonDown = !bCrouchButtonDown;
+}
+
+void AMyCharacter::JumpPressed()
+{
+	Jump();
+	bJumpButtonDown = CanJump();
+	TObjectPtr<UCharacterMovementComponent> CharacterMovementCompoenent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterMovementCompoenent == NULL || !CharacterMovementCompoenent->IsValidLowLevelFast()) return;
+	FVector Velocity = CharacterMovementCompoenent->Velocity;
+	CharacterMovementCompoenent->JumpZVelocity = Velocity.Length() > 0.0f ? 400 : 200;
+}
+
+void AMyCharacter::JumpReleased()
+{
+	StopJumping();
+	bJumpButtonDown = false;
+}
+
+void AMyCharacter::InteractPressed()
+{
+	if (InteractActor == NULL || !InteractActor->IsValidLowLevelFast()) return;
+
+	Cast<IInteractive>(InteractActor)->Interact(this, MenuBoxWidget->GetSelectNum());
+}
+
+void AMyCharacter::AttackPressed()
+{
+	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+	{
+		EquippedGun()->Fire();
+	}
+}
+
+bool AMyCharacter::EquipItem(TObjectPtr<AEquipment> Item)
+{
+	switch (Item->GetEquipmentType())
+	{
+	case EEquipmentType::None:
+		break;
+	case EEquipmentType::Gun:
+		if (EquipGun(Cast<AGun>(Item))) return true;
+		break;
+	case EEquipmentType::HeadGear:
+		break;
+	case EEquipmentType::HeadSet:
+		break;
+	case EEquipmentType::Face:
+		break;
+	case EEquipmentType::Rig:
+		break;
+	case EEquipmentType::Armor:
+		break;
+	case EEquipmentType::ArmorRig:
+		break;
+	case EEquipmentType::Size:
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+bool AMyCharacter::PickupItem(FItemData ItemData)
+{
+	return false;
+}
+
+bool AMyCharacter::EquipGun(TObjectPtr<AGun> GunActor)
+{
+	if (PrimaryGun == NULL || !PrimaryGun->IsValidLowLevelFast())
+	{
+		GunActor->SetState(EItemState::Equipped);
+		PrimaryGun = GunActor;
+		UpdateGunAttachment();
+		return true;
+	}
+	else if (SecondaryGun == NULL || !SecondaryGun->IsValidLowLevelFast())
+	{
+		GunActor->SetState(EItemState::Equipped);
+		SecondaryGun = GunActor;
+		UpdateGunAttachment();
+		return true;
+	}
+
+	return false;
+}
+
+void AMyCharacter::UpdateGunAttachment()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UpdateGunAttachment Called"));
+	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+	{
+		EquippedGun()->AttachToCharacter(this, "GunHoldSocket");
+	}
+	if (StowedGun() != NULL && StowedGun()->IsValidLowLevelFast())
+	{
+		StowedGun()->AttachToCharacter(this, "GunStowedSocket");
+	}
+}
+
+TObjectPtr<AGun> AMyCharacter::EquippedGun()
+{
+	return CurrentGunSlot == EGunSlot::Primary ? PrimaryGun : SecondaryGun;
+}
+
+TObjectPtr<AGun> AMyCharacter::StowedGun()
+{
+	return CurrentGunSlot == EGunSlot::Primary ? SecondaryGun : PrimaryGun;
+}
+
+void AMyCharacter::Interact(TObjectPtr<AActor> Actor, uint8 SelectNum)
+{
+	ECharacterInteract InteractType = (ECharacterInteract)SelectNum;
+
+	switch (InteractType)
+	{
+		// EquipItem 실패 시, PickupItem 실행 흐름
+	case ECharacterInteract::PickupEquipment:
+		if (EquipItem(Cast<AEquipment>(Actor))) break;
+	case ECharacterInteract::PickupItem:
+		break;
+	}
+}
+
+TArray<FText>& AMyCharacter::GetMenuText()
+{
+	return MenuText;
 }
 
