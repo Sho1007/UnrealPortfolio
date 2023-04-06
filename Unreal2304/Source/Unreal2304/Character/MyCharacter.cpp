@@ -208,7 +208,8 @@ void AMyCharacter::AttackPressed()
 {
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
-		EquippedGun()->Fire();
+		FVector TargetLocation = CameraComponent->GetComponentLocation() + (CameraComponent->GetForwardVector() * ZeroPoint * 100);
+		EquippedGun()->Fire(TargetLocation);
 	}
 }
 

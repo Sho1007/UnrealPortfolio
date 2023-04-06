@@ -112,6 +112,8 @@ private:
 	EGunSlot CurrentGunSlot = EGunSlot::Primary;
 	TObjectPtr<AGun> PrimaryGun = NULL;
 	TObjectPtr<AGun> SecondaryGun = NULL;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float ZeroPoint = 50.0f;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

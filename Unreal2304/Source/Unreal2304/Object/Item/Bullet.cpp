@@ -6,27 +6,27 @@
 ABullet::ABullet()
 {
 	//PrimaryActorTick.bCanEverTick = true;
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
+	//CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CollisionComponent->BodyInstance.SetCollisionProfileName("OverlapAll");
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnComponentBeginOverlap);
+	CollisionComponent->SetSphereRadius(0.5f);
+	SetRootComponent(CollisionComponent);
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	SphereComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	// Todo : Hit 할때 호출함 함수 만들고 추가
-	// SphereComponent->OnComponentHit.AddDynamic(this, &ABullet::OnHit);
-	SetRootComponent(SphereComponent);
-
-
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StataicMeshComponent");
-	StaticMeshComponent->SetupAttachment(RootComponent);
-	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
-	ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
-	ProjectileMovementComponent->InitialSpeed = Speed;
-	ProjectileMovementComponent->MaxSpeed = Speed;
+	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
+	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 }
 
-void ABullet::Fire(FTransform FireTransform)
+void ABullet::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	SetActorLocation(FireTransform.GetLocation());
-	SetActorRotation(FireTransform.GetRotation());	
-	ProjectileMovementComponent->SetVelocityInLocalSpace(GetActorForwardVector() * Speed);
+	//if (OtherActor == this) return;
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, OtherActor->GetName());
+}
+
+void ABullet::Fire(FVector MoveDirection)
+{
+	//ProjectileMovementComponent->InitialSpeed = Speed;
+	//ProjectileMovementComponent->MaxSpeed = Speed;
+	//ProjectileMovementComponent->Velocity = MoveDirection * Speed;
 }

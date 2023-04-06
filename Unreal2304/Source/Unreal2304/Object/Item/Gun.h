@@ -22,7 +22,7 @@ class UNREAL2304_API AGun : public AEquipment
 public:
 	AGun();
 
-	bool Fire();
+	bool Fire(FVector TargetLocation);
 
 	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override;
 

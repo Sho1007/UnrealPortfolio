@@ -35,14 +35,15 @@ USTRUCT(BlueprintType)
 struct FItemInfo
 {
 	GENERATED_BODY()
-
-	FString ItemName;
-	FIntPoint ItemSize;
-	TObjectPtr<UTexture2D> ItemImage;
-	TObjectPtr<USkeletalMesh> SkeletalMesh;
-	TObjectPtr<USkeletalMesh> StaticMesh;
-	TSubclassOf<AItem> ItemClass;
+	
+	FText Name;
+	FName DisplayName;
 	EItemType ItemType;
+	float Weight;
+	FIntPoint Size;
+	uint32 TargetIndex;
+	TObjectPtr<UTexture2D> ItemImage;
+	TSubclassOf<AItem> ItemClass;
 };
 
 // 아이템의 개별 정보
@@ -51,15 +52,9 @@ struct FItemData
 {
 	GENERATED_BODY()
 
-	int32 ItemIndex;
+	uint32 ID;
 	FIntPoint InventoryPos;
 	EItemState ItemState;
-
-	TArray<int32> IntArray;
-	TArray<float> FloatArray;
-	TArray<bool> BoolArray;
-
-	TArray<FItemData> ChildData;
 };
 
 UCLASS()

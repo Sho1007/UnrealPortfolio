@@ -13,7 +13,7 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 	SkeletalMeshComponent->SetSimulatePhysics(true);
 }
 
-bool AGun::Fire()
+bool AGun::Fire(FVector TargetLocation)
 {
 	if (Magazine == NULL || !Magazine->IsValidLowLevelFast())
 	{
@@ -21,15 +21,18 @@ bool AGun::Fire()
 		return false;
 	}
 
-	TObjectPtr<ABullet> Bullet = Magazine->Pop();
+	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
+	TObjectPtr<ABullet> Bullet = Magazine->Pop(FireTransform);
 	if (Bullet == NULL || !Bullet->IsValidLowLevelFast())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Magazine is empty"));
 		return false;
 	}
 
-	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
-	Bullet->Fire(FireTransform);
+	// Todo : Add to Character [ZeroPoint]
+	FVector FireDirection = TargetLocation - FireTransform.GetLocation();
+	FireDirection.Normalize();
+	Bullet->Fire(FireDirection);
 
 	if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
 	{

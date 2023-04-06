@@ -11,6 +11,24 @@
  * 
  */
 
+USTRUCT(BlueprintType)
+struct FMagazineInfo
+{
+	GENERATED_BODY()
+	uint8 Capacity;
+	uint8 Ergonomics;
+	int8 LoadUnloadSpeedModifier;
+	int8 CheckSpeedModifier;
+	EBulletType Caliber;
+};
+
+USTRUCT(BlueprintType)
+struct FMagazineData
+{
+	GENERATED_BODY()
+	TArray<uint32> BulletStack;
+};
+
 UCLASS()
 class UNREAL2304_API AMagazine : public AEquipment
 {
@@ -18,12 +36,14 @@ class UNREAL2304_API AMagazine : public AEquipment
 	
 public:
 	AMagazine();
-	bool IsEmpty() { return Bullets.Num() == 0; }
-	TObjectPtr<ABullet> Pop();
+	bool IsEmpty()
+	{
+		return false;
+	}
+	TObjectPtr<ABullet> Pop(FTransform FireTransform);
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
-	TArray<int8> BulletDataArray;
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<ABullet>> Bullets;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<ABullet> BulletClass;
 };
