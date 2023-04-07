@@ -72,6 +72,9 @@ private:
 public:
 	bool PickupItem(FItemData ItemData);
 	bool EquipGun(TObjectPtr<AGun> GunActor);
+
+	FVector GetZeroPointLocation();
+
 private:
 	void UpdateGunAttachment();
 	TObjectPtr<AGun> EquippedGun();

@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
 #include "../../Interface/Interactive.h"
+#include "Engine/DataTable.h"
+
 #include "Item.generated.h"
 
 /*
@@ -32,17 +35,25 @@ enum class EItemState : uint8
 
 // 아이템의 공통 정보
 USTRUCT(BlueprintType)
-struct FItemInfo
+struct FItemInfo : public FTableRowBase
 {
 	GENERATED_BODY()
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName DisplayName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EItemType ItemType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Weight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntPoint Size;
-	uint32 TargetIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TargetIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> ItemImage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AItem> ItemClass;
 };
 

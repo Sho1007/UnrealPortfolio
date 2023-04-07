@@ -208,8 +208,8 @@ void AMyCharacter::AttackPressed()
 {
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
-		FVector TargetLocation = CameraComponent->GetComponentLocation() + (CameraComponent->GetForwardVector() * ZeroPoint * 100);
-		EquippedGun()->Fire(TargetLocation);
+		
+		EquippedGun()->Fire();
 	}
 }
 
@@ -265,6 +265,12 @@ bool AMyCharacter::EquipGun(TObjectPtr<AGun> GunActor)
 	}
 
 	return false;
+}
+
+FVector AMyCharacter::GetZeroPointLocation()
+{
+	FVector ZeroPointLocation = CameraComponent->GetComponentLocation() + (CameraComponent->GetForwardVector() * ZeroPoint * 100);
+	return ZeroPointLocation;
 }
 
 void AMyCharacter::UpdateGunAttachment()

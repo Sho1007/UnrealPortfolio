@@ -26,7 +26,7 @@ void ABullet::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void ABullet::Fire(FVector MoveDirection)
 {
-	//ProjectileMovementComponent->InitialSpeed = Speed;
-	//ProjectileMovementComponent->MaxSpeed = Speed;
-	//ProjectileMovementComponent->Velocity = MoveDirection * Speed;
+	ProjectileMovementComponent->InitialSpeed = Speed;
+	ProjectileMovementComponent->MaxSpeed = Speed;
+	ProjectileMovementComponent->Velocity = MoveDirection * Speed;
 }

@@ -7,12 +7,31 @@
 
 #include "../Item/Magazine.h"
 #include "Components/BoxComponent.h"
+#include "Engine/DataTable.h"
 
 #include "Gun.generated.h"
 
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EFireMode : uint8
+{
+	None,
+	Single,
+	Burst2,
+	Burst3,
+	FullAuto,
+	Size
+};
+
+USTRUCT(BlueprintType)
+struct FGunInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+};
+
 
 UCLASS()
 class UNREAL2304_API AGun : public AEquipment
@@ -22,13 +41,18 @@ class UNREAL2304_API AGun : public AEquipment
 public:
 	AGun();
 
-	bool Fire(FVector TargetLocation);
+	bool Fire();
 
 	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override;
 
 	void AttachToCharacter(TObjectPtr<ACharacter> Character, FName SocketName);
 	void SetState(EItemState NewState);
 private:
+	void FireSingle();
+
+private:
+	// Owner
+	TObjectPtr<AActor> Owner;
 	// Component
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
@@ -41,4 +65,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FName FirePosName;
+
+	// Fire Mode 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TArray<EFireMode> FireModes;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	uint8 CurrentFireMode;
+
+	FTimerHandle FireTimerHandle;
 };
