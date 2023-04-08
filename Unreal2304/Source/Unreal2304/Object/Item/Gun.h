@@ -67,7 +67,7 @@ public:
 	void ChangeFireMode();
 private:
 	void FireSingle();
-	
+	void ApplyRecoilToCharacter();
 private:
 	// 개별 정보
 	TObjectPtr<ACharacter> Owner;

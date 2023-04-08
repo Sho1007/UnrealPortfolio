@@ -4,6 +4,7 @@
 #include "../Item/Gun.h"
 #include "GameFramework/Character.h"
 #include "../../Character/MyCharacter.h"
+#include "Math/UnrealMathUtility.h"
 
 AGun::AGun() : AEquipment(EEquipmentType::Gun)
 {
@@ -60,6 +61,8 @@ void AGun::FireSingle()
 		FireStop();
 		return;
 	}
+	// Todo : Apply Reocil
+	ApplyRecoilToCharacter();
 	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
 	TObjectPtr<ABullet> Bullet = Magazine->Pop(FireTransform);
 	if (Bullet == NULL || !Bullet->IsValidLowLevelFast())
@@ -96,6 +99,13 @@ void AGun::FireSingle()
 	}*/
 
 	return;
+}
+
+void AGun::ApplyRecoilToCharacter()
+{
+	// Todo : Recoil 적용 방법이 맞는지 확인 후 재적용
+
+	Cast<AMyCharacter>(Owner)->ApplyGunRecoil(FMath::RandRange(-GunInfo.VerticalRecoil, 0), FMath::RandRange(-GunInfo.HorizontalRecoil/2, GunInfo.HorizontalRecoil/2));
 }
 
 void AGun::FireStop()

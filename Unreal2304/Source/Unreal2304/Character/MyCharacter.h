@@ -25,7 +25,9 @@ UCLASS()
 class UNREAL2304_API AMyCharacter : public ACharacter, public IInteractive
 {
 	GENERATED_BODY()
-
+	
+// Gun이 Character 의 private 에 접근할 필요가 있을까?
+//friend class AGun;
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
@@ -77,6 +79,7 @@ public:
 	bool EquipGun(TObjectPtr<AGun> GunActor);
 
 	FVector GetZeroPointLocation();
+	void ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil);
 
 private:
 	void UpdateGunAttachment();
@@ -120,6 +123,9 @@ private:
 	TObjectPtr<AGun> SecondaryGun = NULL;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float ZeroPoint = 50.0f;
+	// Gun Recoil
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float GunRecoilFactor = 0.1f;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

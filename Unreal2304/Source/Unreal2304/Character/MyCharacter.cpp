@@ -291,6 +291,13 @@ FVector AMyCharacter::GetZeroPointLocation()
 	return ZeroPointLocation;
 }
 
+void AMyCharacter::ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil)
+{
+	// Todo : Recoil 적용하는 공식이 확인 후 재적용
+	AddControllerPitchInput(VerticalRecoil * GunRecoilFactor);
+	AddControllerYawInput(HorizontalRecoil * GunRecoilFactor);
+}
+
 void AMyCharacter::UpdateGunAttachment()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UpdateGunAttachment Called"));
