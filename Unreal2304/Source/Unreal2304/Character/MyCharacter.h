@@ -66,6 +66,8 @@ private:
 	void AttackPressed();
 	void AttackReleased();
 
+	void ChangeFireMode();
+
 private:
 	bool EquipItem(TObjectPtr<AEquipment> Item);
 

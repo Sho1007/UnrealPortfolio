@@ -30,6 +30,21 @@ USTRUCT(BlueprintType)
 struct FGunInfo : public FTableRowBase
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 VerticalRecoil;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 HorizontalRecoil;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 EffectiveDistance;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 Ergonomics;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<EFireMode> FireModes;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 RateOfFile;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EBulletType Caliber;
 };
 
 
@@ -48,32 +63,31 @@ public:
 
 	void AttachToCharacter(TObjectPtr<ACharacter> Character, FName SocketName);
 	void SetState(EItemState NewState);
+
+	void ChangeFireMode();
 private:
 	void FireSingle();
 	
 private:
-	// Owner
+	// 개별 정보
 	TObjectPtr<ACharacter> Owner;
-	// Component
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AMagazine> Magazine;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<AActor> MuzzleFlash;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	FName FirePosName;
-
-	// Fire Mode
-	bool bCanFire = true;
-	uint8 FireCount;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TArray<EFireMode> FireModes;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 CurrentFireMode;
+	bool bCanFire = true;
 
+	// 공통 정보
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AActor> MuzzleFlash;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FName FirePosName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FGunInfo GunInfo;
+
+	// 단순 정보
+	uint8 FireCount;
 	FTimerHandle FireTimerHandle;
 };

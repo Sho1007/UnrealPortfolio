@@ -69,6 +69,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AMyCharacter::AttackPressed);
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Released, this, &AMyCharacter::AttackReleased);
+
+	PlayerInputComponent->BindAction("ChangeFireMode", EInputEvent::IE_Pressed, this, &AMyCharacter::ChangeFireMode);
 }
 
 void AMyCharacter::CheckInteract()
@@ -218,6 +220,14 @@ void AMyCharacter::AttackReleased()
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
 		EquippedGun()->FireStop();
+	}
+}
+
+void AMyCharacter::ChangeFireMode()
+{
+	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+	{
+		EquippedGun()->ChangeFireMode();
 	}
 }
 

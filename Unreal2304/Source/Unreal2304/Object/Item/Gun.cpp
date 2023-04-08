@@ -17,8 +17,13 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 bool AGun::Fire()
 {
 	if (!bCanFire) return false;
+	if (CurrentFireMode >= GunInfo.FireModes.Num())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "CurrentFireMode is not valid");
+		return false;
+	}
 
-	switch (FireModes[CurrentFireMode])
+	switch (GunInfo.FireModes[CurrentFireMode])
 	{
 	case EFireMode::None:
 		break;
@@ -63,7 +68,12 @@ void AGun::FireSingle()
 		return;
 	}
 
-	if (FireModes[CurrentFireMode] == EFireMode::Burst2 || FireModes[CurrentFireMode] == EFireMode::Burst3)
+	if (Bullet->GetBulletType() != GunInfo.Caliber)
+	{
+
+	}
+
+	if (GunInfo.FireModes[CurrentFireMode] == EFireMode::Burst2 || GunInfo.FireModes[CurrentFireMode] == EFireMode::Burst3)
 	{
 		if (--FireCount == 0)
 		{
@@ -136,4 +146,12 @@ void AGun::SetState(EItemState NewState)
 		SkeletalMeshComponent->SetCollisionProfileName("NoCollision");
 		break;
 	}
+}
+
+void AGun::ChangeFireMode()
+{
+	CurrentFireMode = (CurrentFireMode + 1) % GunInfo.FireModes.Num();
+
+	// Todo : [현재 발사 모드 화면]출력 기능 구현 필요
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, UEnum::GetValueAsString(GunInfo.FireModes[CurrentFireMode]));
 }

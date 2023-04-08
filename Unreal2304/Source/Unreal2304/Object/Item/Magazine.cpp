@@ -28,3 +28,10 @@ TObjectPtr<ABullet> AMagazine::Pop(FTransform FireTransform)
 	// DataTable 에서 Class 가져와서 스폰하는걸로 바꾸기
 	return GetWorld()->SpawnActor<ABullet>(BulletClass, FireTransform);
 }
+
+bool AMagazine::Push(int32 BulletID)
+{
+	// BulletType이 맞는지 확인 후 안맞으면 False 해야함
+	MagazineData.BulletStack.Push(BulletID);
+	return true;
+}
