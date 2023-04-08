@@ -16,6 +16,8 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 
 bool AGun::Fire()
 {
+	if (!bCanFire) return false;
+
 	switch (FireModes[CurrentFireMode])
 	{
 	case EFireMode::None:
@@ -24,11 +26,17 @@ bool AGun::Fire()
 		FireSingle();
 		break;
 	case EFireMode::Burst2:
+		bCanFire = false;
+		FireCount = 2;
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
 		break;
 	case EFireMode::Burst3:
+		bCanFire = false;
+		FireCount = 3;
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
 		break;
 	case EFireMode::FullAuto:
-		//GetWorldTimerManager().SetTimer();
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
 		break;
 	case EFireMode::Size:
 		break;
@@ -41,28 +49,33 @@ bool AGun::Fire()
 
 void AGun::FireSingle()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "1");
 	if (Magazine == NULL || !Magazine->IsValidLowLevelFast())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Magazine"));
+		FireStop();
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "2");
 	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
 	TObjectPtr<ABullet> Bullet = Magazine->Pop(FireTransform);
 	if (Bullet == NULL || !Bullet->IsValidLowLevelFast())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Magazine is empty"));
+		FireStop();
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "3");
+
+	if (FireModes[CurrentFireMode] == EFireMode::Burst2 || FireModes[CurrentFireMode] == EFireMode::Burst3)
+	{
+		if (--FireCount == 0)
+		{
+			FireStop();
+		}
+	}
 	FVector FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - Bullet->GetActorLocation();
 	FireDirection.Normalize();
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "4");
 
 	Bullet->Fire(FireDirection);
 
-	if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
+	/*if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("MuzzleFlash is null or not valid"));
 	}
@@ -70,9 +83,15 @@ void AGun::FireSingle()
 	{
 		FActorSpawnParameters ActorSpawnParameters;
 		GetWorld()->SpawnActor<AActor>(MuzzleFlash->StaticClass(), FireTransform, ActorSpawnParameters);
-	}
+	}*/
 
 	return;
+}
+
+void AGun::FireStop()
+{
+	GetWorldTimerManager().ClearTimer(FireTimerHandle);
+	bCanFire = true;
 }
 
 void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)
@@ -89,6 +108,12 @@ void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)
 
 void AGun::AttachToCharacter(TObjectPtr<ACharacter> Character, FName SocketName)
 {
+	if (Character == NULL || !Character->IsValidLowLevelFast())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Character is not valid");
+		return;
+	}
+	Owner = Character;
 	FAttachmentTransformRules AttachmentRule(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh(), AttachmentRule, SocketName);
 

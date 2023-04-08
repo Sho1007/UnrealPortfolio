@@ -42,6 +42,7 @@ public:
 	AGun();
 
 	bool Fire();
+	void FireStop();
 
 	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override;
 
@@ -49,10 +50,10 @@ public:
 	void SetState(EItemState NewState);
 private:
 	void FireSingle();
-
+	
 private:
 	// Owner
-	TObjectPtr<AActor> Owner;
+	TObjectPtr<ACharacter> Owner;
 	// Component
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
@@ -66,7 +67,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FName FirePosName;
 
-	// Fire Mode 
+	// Fire Mode
+	bool bCanFire = true;
+	uint8 FireCount;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<EFireMode> FireModes;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

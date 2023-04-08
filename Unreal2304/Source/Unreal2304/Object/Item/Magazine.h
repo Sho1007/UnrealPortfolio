@@ -26,7 +26,8 @@ USTRUCT(BlueprintType)
 struct FMagazineData
 {
 	GENERATED_BODY()
-	TArray<uint32> BulletStack;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<int32> BulletStack;
 };
 
 UCLASS()
@@ -38,12 +39,14 @@ public:
 	AMagazine();
 	bool IsEmpty()
 	{
-		return false;
+		return MagazineData.BulletStack.Num() == 0;
 	}
 	TObjectPtr<ABullet> Pop(FTransform FireTransform);
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TSubclassOf<ABullet> BulletClass;
+	TSubclassOf<AActor> BulletClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FMagazineData MagazineData;
 };

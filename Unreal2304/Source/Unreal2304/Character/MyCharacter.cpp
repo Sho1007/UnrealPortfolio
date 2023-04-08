@@ -68,6 +68,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &AMyCharacter::InteractPressed);
 
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AMyCharacter::AttackPressed);
+	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Released, this, &AMyCharacter::AttackReleased);
 }
 
 void AMyCharacter::CheckInteract()
@@ -208,8 +209,15 @@ void AMyCharacter::AttackPressed()
 {
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
-		
 		EquippedGun()->Fire();
+	}
+}
+
+void AMyCharacter::AttackReleased()
+{
+	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+	{
+		EquippedGun()->FireStop();
 	}
 }
 
@@ -251,15 +259,15 @@ bool AMyCharacter::EquipGun(TObjectPtr<AGun> GunActor)
 {
 	if (PrimaryGun == NULL || !PrimaryGun->IsValidLowLevelFast())
 	{
-		GunActor->SetState(EItemState::Equipped);
 		PrimaryGun = GunActor;
+		GunActor->SetState(EItemState::Equipped);
 		UpdateGunAttachment();
 		return true;
 	}
 	else if (SecondaryGun == NULL || !SecondaryGun->IsValidLowLevelFast())
 	{
-		GunActor->SetState(EItemState::Equipped);
 		SecondaryGun = GunActor;
+		GunActor->SetState(EItemState::Equipped);
 		UpdateGunAttachment();
 		return true;
 	}

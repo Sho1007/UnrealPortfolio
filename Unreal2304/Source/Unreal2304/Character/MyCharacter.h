@@ -64,6 +64,7 @@ private:
 	void InteractPressed();
 
 	void AttackPressed();
+	void AttackReleased();
 
 private:
 	bool EquipItem(TObjectPtr<AEquipment> Item);
