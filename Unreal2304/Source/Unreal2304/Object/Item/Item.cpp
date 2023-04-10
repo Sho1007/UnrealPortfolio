@@ -2,6 +2,10 @@
 
 #include "../Item/Item.h"
 
+AItem::AItem()
+{
+}
+
 TArray<FText>& AItem::GetMenuText()
 {
 	return MenuText;

@@ -10,18 +10,19 @@
 
 AGun::AGun() : AEquipment(EEquipmentType::Gun)
 {
+	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(true);
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	SetRootComponent(SkeletalMeshComponent);
-	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	SkeletalMeshComponent->SetCollisionProfileName("DroppedItem");
 	SkeletalMeshComponent->SetSimulatePhysics(true);
+	SkeletalMeshComponent->SetCollisionProfileName("DroppedItem");
 	FireSoundComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
 	FireSoundComponent->SetupAttachment(SkeletalMeshComponent, FirePosName);
+	FireSoundComponent->Stop();
 }
 
 void AGun::BeginPlay()
 {
-	FireSoundComponent->Stop();
 }
 
 bool AGun::Fire()
@@ -43,15 +44,15 @@ bool AGun::Fire()
 	case EFireMode::Burst2:
 		bCanFire = false;
 		FireCount = 2;
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
 		break;
 	case EFireMode::Burst3:
 		bCanFire = false;
 		FireCount = 3;
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
 		break;
 	case EFireMode::FullAuto:
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 0.05f, true);
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
 		break;
 	case EFireMode::Size:
 		break;
@@ -95,7 +96,7 @@ void AGun::FireSingle()
 {
 	if (Magazine == NULL || !Magazine->IsValidLowLevelFast())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Magazine"));
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireSingle] Magazine is not valid");
 		return;
 	}
 
@@ -119,6 +120,8 @@ void AGun::FireSingle()
 			FireStop();
 		}
 	}
+
+	bFired = true;
 
 	// Todo : Apply Reocil
 	ApplyRecoilToCharacter();
@@ -148,14 +151,29 @@ void AGun::ApplyRecoilToCharacter()
 {
 	// Todo : Recoil 적용 방법이 맞는지 확인 후 재적용
 
-	Cast<AMyCharacter>(Owner)->ApplyGunRecoil(FMath::RandRange(-GunInfo.VerticalRecoil, 0), FMath::RandRange(-GunInfo.HorizontalRecoil/2, GunInfo.HorizontalRecoil/2));
+	Cast<AMyCharacter>(Owner)->ApplyGunRecoil(-GunInfo.VerticalRecoil, GunInfo.HorizontalRecoil * (FMath::RandRange(0, 1) == 1 ? -1 : 1));
 }
 
 void AGun::FireStop()
 {
+	if (!bFired) return; bFired = false;
 	GetWorldTimerManager().ClearTimer(FireTimerHandle);
 	bCanFire = true;
-	FireSoundComponent->StopDelayed(0.05f);
+	if (FireSoundComponent == NULL || !FireSoundComponent->IsValidLowLevelFast())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireStop] Sound Component is not valid");
+		return;
+	}
+	if (GunInfo.Sound_Loop_TailClose == NULL || !GunInfo.Sound_Loop_TailClose->IsValidLowLevelFast())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireStop] Sound_Loop_TailClose is not valid");
+		return;
+	}
+	if (GunInfo.FireModes[CurrentFireMode] != EFireMode::Single)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, GunInfo.Sound_Loop_TailClose, SkeletalMeshComponent->GetSocketLocation(FirePosName));
+	}
+	FireSoundComponent->Stop();
 }
 
 void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)
@@ -177,11 +195,11 @@ void AGun::AttachToCharacter(TObjectPtr<ACharacter> Character, FName SocketName)
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Character is not valid");
 		return;
 	}
+	SetState(EItemState::Equipped);
 	Owner = Character;
+	SkeletalMeshComponent->SetSimulatePhysics(false);
 	FAttachmentTransformRules AttachmentRule(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh(), AttachmentRule, SocketName);
-
-	UE_LOG(LogTemp, Warning, TEXT("AttachToCharacter Called"));
 }
 
 void AGun::SetState(EItemState NewState)

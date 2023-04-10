@@ -270,14 +270,12 @@ bool AMyCharacter::EquipGun(TObjectPtr<AGun> GunActor)
 	if (PrimaryGun == NULL || !PrimaryGun->IsValidLowLevelFast())
 	{
 		PrimaryGun = GunActor;
-		GunActor->SetState(EItemState::Equipped);
 		UpdateGunAttachment();
 		return true;
 	}
 	else if (SecondaryGun == NULL || !SecondaryGun->IsValidLowLevelFast())
 	{
 		SecondaryGun = GunActor;
-		GunActor->SetState(EItemState::Equipped);
 		UpdateGunAttachment();
 		return true;
 	}

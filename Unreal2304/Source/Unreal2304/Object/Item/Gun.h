@@ -42,13 +42,15 @@ struct FGunInfo : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EFireMode> FireModes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 RateOfFile = 0;
+	int32 RateOfFire = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EBulletType Caliber = EBulletType::None;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> Sound_FireClose;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> Sound_Loop_FireClose;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USoundBase> Sound_Loop_TailClose;
 };
 
 
@@ -83,8 +85,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 CurrentFireMode;
 	bool bCanFire = true;
+	bool bFired = false;
 
 	// 공통 정보
+	TObjectPtr<USceneComponent> BaseRootComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
