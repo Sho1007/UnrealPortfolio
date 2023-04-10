@@ -16,23 +16,23 @@ struct FMagazineInfo
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	uint8 Capacity;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	uint8 Ergonomics;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 LoadUnloadSpeedModifier;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 CheckSpeedModifier;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EBulletType Caliber;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 Capacity = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 Ergonomics = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 LoadUnloadSpeedModifier = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CheckSpeedModifier = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBulletType Caliber = EBulletType::None;
 };
 
 USTRUCT(BlueprintType)
 struct FMagazineData
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> BulletStack;
 };
 

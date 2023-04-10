@@ -40,17 +40,17 @@ struct FItemInfo : public FTableRowBase
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
+	FText Name = FText();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName DisplayName;
+	FName DisplayName = FName();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EItemType ItemType;
+	EItemType ItemType = EItemType::None;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Weight;
+	float Weight = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint Size;
+	FIntPoint Size = FIntPoint();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 TargetIndex;
+	int32 TargetIndex = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> ItemImage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -81,7 +81,7 @@ public:
 	EItemState GetItemState() { return ItemData.ItemState; }
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FItemData ItemData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

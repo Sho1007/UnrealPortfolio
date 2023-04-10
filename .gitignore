@@ -45,6 +45,8 @@
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
+Unreal2304/Content/Resources/*
+
 # Binary Files
 Binaries/*
 Plugins/*/Binaries/*

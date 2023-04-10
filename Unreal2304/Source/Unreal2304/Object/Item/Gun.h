@@ -31,20 +31,24 @@ struct FGunInfo : public FTableRowBase
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 VerticalRecoil;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 HorizontalRecoil;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 EffectiveDistance;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 Ergonomics;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 VerticalRecoil = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 HorizontalRecoil = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 EffectiveDistance = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Ergonomics = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EFireMode> FireModes;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 RateOfFile;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EBulletType Caliber;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 RateOfFile = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBulletType Caliber = EBulletType::None;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USoundBase> Sound_FireClose;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USoundBase> Sound_Loop_FireClose;
 };
 
 
@@ -56,6 +60,8 @@ class UNREAL2304_API AGun : public AEquipment
 public:
 	AGun();
 
+	void BeginPlay() override;
+
 	bool Fire();
 	void FireStop();
 
@@ -66,6 +72,7 @@ public:
 
 	void ChangeFireMode();
 private:
+	void PlayFireSound();
 	void FireSingle();
 	void ApplyRecoilToCharacter();
 private:
@@ -90,4 +97,5 @@ private:
 	// 단순 정보
 	uint8 FireCount;
 	FTimerHandle FireTimerHandle;
+	TObjectPtr<UAudioComponent> FireSoundComponent;
 };

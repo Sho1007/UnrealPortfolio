@@ -3,8 +3,10 @@
 
 #include "../Item/Gun.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "../../Character/MyCharacter.h"
 #include "Math/UnrealMathUtility.h"
+#include "Components/AudioComponent.h"
 
 AGun::AGun() : AEquipment(EEquipmentType::Gun)
 {
@@ -13,6 +15,13 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SkeletalMeshComponent->SetCollisionProfileName("DroppedItem");
 	SkeletalMeshComponent->SetSimulatePhysics(true);
+	FireSoundComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
+	FireSoundComponent->SetupAttachment(SkeletalMeshComponent, FirePosName);
+}
+
+void AGun::BeginPlay()
+{
+	FireSoundComponent->Stop();
 }
 
 bool AGun::Fire()
@@ -53,16 +62,43 @@ bool AGun::Fire()
 	return true;
 }
 
+void AGun::PlayFireSound()
+{
+	// Todo : Fire Sound
+
+	switch (GunInfo.FireModes[CurrentFireMode])
+	{
+	case EFireMode::Single:
+		UGameplayStatics::PlaySoundAtLocation(this, GunInfo.Sound_FireClose, SkeletalMeshComponent->GetSocketLocation(FirePosName));
+		break;
+	case EFireMode::Burst2:
+	case EFireMode::Burst3:
+	case EFireMode::FullAuto:
+		if (!FireSoundComponent->IsPlaying())
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, GunInfo.Sound_FireClose, SkeletalMeshComponent->GetSocketLocation(FirePosName));
+			FireSoundComponent->SetSound(GunInfo.Sound_Loop_FireClose);
+			FireSoundComponent->Play();
+		}
+		break;
+	}
+
+	if (GunInfo.Sound_FireClose == NULL || !GunInfo.Sound_FireClose->IsValidLowLevelFast())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "Sound Fire is not valid");
+		return;
+	}
+	//FireSoundComponent->Deactivate();
+}
+
 void AGun::FireSingle()
 {
 	if (Magazine == NULL || !Magazine->IsValidLowLevelFast())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Magazine"));
-		FireStop();
 		return;
 	}
-	// Todo : Apply Reocil
-	ApplyRecoilToCharacter();
+
 	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
 	TObjectPtr<ABullet> Bullet = Magazine->Pop(FireTransform);
 	if (Bullet == NULL || !Bullet->IsValidLowLevelFast())
@@ -83,6 +119,13 @@ void AGun::FireSingle()
 			FireStop();
 		}
 	}
+
+	// Todo : Apply Reocil
+	ApplyRecoilToCharacter();
+
+	// Todo : Play Sound
+	PlayFireSound();
+
 	FVector FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - Bullet->GetActorLocation();
 	FireDirection.Normalize();
 
@@ -112,6 +155,7 @@ void AGun::FireStop()
 {
 	GetWorldTimerManager().ClearTimer(FireTimerHandle);
 	bCanFire = true;
+	FireSoundComponent->StopDelayed(0.05f);
 }
 
 void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)
