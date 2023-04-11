@@ -73,6 +73,8 @@ public:
 	void SetState(EItemState NewState);
 
 	void ChangeFireMode();
+
+	TObjectPtr<USkeletalMeshComponent> GetGunMesh() { return SkeletalMeshComponent; }
 private:
 	void PlayFireSound();
 	void FireSingle();

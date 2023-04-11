@@ -34,10 +34,11 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true);
+	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	SpringArmComponent->AttachToComponent(GetMesh(), AttachRules, "head");
 	CameraComponent->SetRelativeLocation(FVector(10, 0, 0));
 	//SpringArmComponent->ResetRelativeTransform();
+	GunRecoilFactor = GunRecoilFactor_Base;
 }
 
 // Called every frame
@@ -69,6 +70,12 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AMyCharacter::AttackPressed);
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Released, this, &AMyCharacter::AttackReleased);
+
+	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this, &AMyCharacter::AimingPressed);
+
+	PlayerInputComponent->BindAction("StopBreath", EInputEvent::IE_Pressed, this, &AMyCharacter::StopBreathPressed);
+	PlayerInputComponent->BindAction("StopBreath", EInputEvent::IE_Released, this, &AMyCharacter::StopBreathReleased);
+
 
 	PlayerInputComponent->BindAction("ChangeFireMode", EInputEvent::IE_Pressed, this, &AMyCharacter::ChangeFireMode);
 }
@@ -211,6 +218,7 @@ void AMyCharacter::AttackPressed()
 {
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
+		GetWorldTimerManager().SetTimer(GunRecoilTimerHandle, this, &AMyCharacter::AdjustGunRecoilFactor, GunRecoilFactor_Adjust_Rate, true);
 		EquippedGun()->Fire();
 	}
 }
@@ -220,7 +228,42 @@ void AMyCharacter::AttackReleased()
 	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
 	{
 		EquippedGun()->FireStop();
+		GetWorldTimerManager().ClearTimer(GunRecoilTimerHandle);
+		GunRecoilFactor = GunRecoilFactor_Base;
 	}
+}
+
+void AMyCharacter::AimingPressed()
+{
+	FAttachmentTransformRules AttachRule(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true);
+	if (bAimButtonDown)
+	{
+		bAimButtonDown = false;
+		SpringArmComponent->AttachToComponent(GetMesh(), AttachRule, "head");
+	}
+	else
+	{
+		if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+		{
+			bAimButtonDown = true;
+			SpringArmComponent->AttachToComponent(EquippedGun()->GetGunMesh(), AttachRule, "ZoomFacePos");
+		}
+		else
+		{
+			bAimButtonDown = false;
+			SpringArmComponent->AttachToComponent(GetMesh(), AttachRule, "head");
+		}
+	}
+}
+
+void AMyCharacter::StopBreathPressed()
+{
+	bStopBreath = true;
+}
+
+void AMyCharacter::StopBreathReleased()
+{
+	bStopBreath = false;
 }
 
 void AMyCharacter::ChangeFireMode()
@@ -296,6 +339,18 @@ void AMyCharacter::ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil)
 	AddControllerYawInput(HorizontalRecoil * GunRecoilFactor);
 }
 
+void AMyCharacter::PlayGunFireAnimMontage(float Rate)
+{
+	if (bAimButtonDown)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(FireIronsight_AnimMontage);
+	}
+	else
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(FireHip_AnimMontage);
+	}
+}
+
 void AMyCharacter::UpdateGunAttachment()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UpdateGunAttachment Called"));
@@ -317,6 +372,16 @@ TObjectPtr<AGun> AMyCharacter::EquippedGun()
 TObjectPtr<AGun> AMyCharacter::StowedGun()
 {
 	return CurrentGunSlot == EGunSlot::Primary ? SecondaryGun : PrimaryGun;
+}
+
+void AMyCharacter::AdjustGunRecoilFactor()
+{
+	if (GunRecoilFactor > GunRecoilFactor_Min)
+	{
+		GunRecoilFactor -= GunRecoilFactor_Adjust_Amount;
+	}
+
+	AddControllerPitchInput(GunRecoilFactor_Base - GunRecoilFactor);
 }
 
 void AMyCharacter::Interact(TObjectPtr<AActor> Actor, uint8 SelectNum)

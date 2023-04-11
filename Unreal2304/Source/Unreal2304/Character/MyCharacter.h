@@ -68,7 +68,14 @@ private:
 	void AttackPressed();
 	void AttackReleased();
 
+	void AimingPressed();
+
+	void StopBreathPressed();
+	void StopBreathReleased();
+
 	void ChangeFireMode();
+
+	
 
 private:
 	bool EquipItem(TObjectPtr<AEquipment> Item);
@@ -80,11 +87,20 @@ public:
 
 	FVector GetZeroPointLocation();
 	void ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UCameraComponent* GetPlayerCamera() { return CameraComponent; }
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool GetAimButtonDown() { return bAimButtonDown; }
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool GetStopBreath() { return bStopBreath; }
+	void PlayGunFireAnimMontage(float Rate);
 
 private:
 	void UpdateGunAttachment();
 	TObjectPtr<AGun> EquippedGun();
 	TObjectPtr<AGun> StowedGun();
+
+	void AdjustGunRecoilFactor();
 
 	
 public:
@@ -122,10 +138,30 @@ private:
 	TObjectPtr<AGun> PrimaryGun = NULL;
 	TObjectPtr<AGun> SecondaryGun = NULL;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> FireHip_AnimMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> FireIronsight_AnimMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float ZeroPoint = 50.0f;
 	// Gun Recoil
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float GunRecoilFactor = 0.1f;
+	float GunRecoilFactor_Base = 0.01f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float GunRecoilFactor_Min = 0.001f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float GunRecoilFactor_Adjust_Amount = 0.001f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float GunRecoilFactor_Adjust_Rate = 0.1f;
+
+	float GunRecoilFactor = 0.01f;
+	
+
+	FTimerHandle GunRecoilTimerHandle;
+
+	// Aiming Var
+	bool bAimButtonDown = false;
+	bool bStopBreath = false;
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;

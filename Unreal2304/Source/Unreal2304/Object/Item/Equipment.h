@@ -22,6 +22,7 @@ enum class EEquipmentType : uint8
 	Armor,
 	ArmorRig,
 	Magazine,
+	Scope,
 	Size
 };
 

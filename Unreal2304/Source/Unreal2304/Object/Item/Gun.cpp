@@ -42,16 +42,19 @@ bool AGun::Fire()
 		break;
 	case EFireMode::Burst2:
 		bCanFire = false;
-		FireCount = 2;
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
+		FireCount = 1;
+		FireSingle();
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true, 60.0f / GunInfo.RateOfFire);
 		break;
 	case EFireMode::Burst3:
 		bCanFire = false;
-		FireCount = 3;
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
+		FireCount = 2;
+		FireSingle();
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true, 60.0f / GunInfo.RateOfFire);
 		break;
 	case EFireMode::FullAuto:
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true);
+		FireSingle();
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &AGun::FireSingle, 60.0f / GunInfo.RateOfFire, true, 60.0f / GunInfo.RateOfFire);
 		break;
 	case EFireMode::Size:
 		break;
@@ -92,24 +95,35 @@ void AGun::PlayFireSound()
 
 void AGun::FireSingle()
 {
+	bFired = true;
 	if (Magazine == NULL || !Magazine->IsValidLowLevelFast())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireSingle] Magazine is not valid");
 		return;
 	}
-
 	FTransform FireTransform = SkeletalMeshComponent->GetSocketTransform(FirePosName);
+	
+	//FireTransform.SetLocation(FireTransform.GetLocation() + (FireDirection * 20.0f));
 	TObjectPtr<ABullet> Bullet = Magazine->Pop(FireTransform);
 	if (Bullet == NULL || !Bullet->IsValidLowLevelFast())
 	{
 		FireStop();
 		return;
 	}
+	Bullet->SetInstigator(Owner);
 
 	if (Bullet->GetBulletType() != GunInfo.Caliber)
 	{
-
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireSingle] Bullet Type is not Matched");
+		return;
 	}
+
+	
+	FVector FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+	FireDirection.Normalize();
+
+	Bullet->Fire(FireDirection);
+	
 
 	if (GunInfo.FireModes[CurrentFireMode] == EFireMode::Burst2 || GunInfo.FireModes[CurrentFireMode] == EFireMode::Burst3)
 	{
@@ -119,18 +133,13 @@ void AGun::FireSingle()
 		}
 	}
 
-	bFired = true;
-
 	// Todo : Apply Reocil
 	ApplyRecoilToCharacter();
 
 	// Todo : Play Sound
 	PlayFireSound();
 
-	FVector FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - Bullet->GetActorLocation();
-	FireDirection.Normalize();
-
-	Bullet->Fire(FireDirection);
+	Cast<AMyCharacter>(Owner)->PlayGunFireAnimMontage(60.0f / GunInfo.RateOfFire);
 
 	/*if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
 	{
@@ -154,9 +163,9 @@ void AGun::ApplyRecoilToCharacter()
 
 void AGun::FireStop()
 {
-	if (!bFired) return; bFired = false;
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireStop] Function Called");
 	GetWorldTimerManager().ClearTimer(FireTimerHandle);
-	bCanFire = true;
+	
 	if (FireSoundComponent == NULL || !FireSoundComponent->IsValidLowLevelFast())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireStop] Sound Component is not valid");
@@ -167,11 +176,13 @@ void AGun::FireStop()
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[FireStop] Sound_Loop_TailClose is not valid");
 		return;
 	}
+	FireSoundComponent->Stop();
+	if (!bFired) return; bFired = false;
+	bCanFire = true;
 	if (GunInfo.FireModes[CurrentFireMode] != EFireMode::Single)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, GunInfo.Sound_Loop_TailClose, SkeletalMeshComponent->GetSocketLocation(FirePosName));
 	}
-	FireSoundComponent->Stop();
 }
 
 void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)
