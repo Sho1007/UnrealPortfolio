@@ -6,6 +6,11 @@
 
 void UMenuBoxWidget::Initialize(TArray<FText>& MenuText)
 {
+	if (MenuText.Num() <= 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[Initialize] MenuText is Empty");
+		return;
+	}
 	for (FText& Text : MenuText)
 	{
 		TObjectPtr<UMenuBoxChildWidget> Child = Cast<UMenuBoxChildWidget>(CreateWidget(GetWorld(), MenuBoxChildWidgetClass));
@@ -17,11 +22,21 @@ void UMenuBoxWidget::Initialize(TArray<FText>& MenuText)
 
 void UMenuBoxWidget::ToggleChildAt(int32 ChildPos)
 {
+	if (VB_MenuBox->GetChildrenCount() <= 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[Initialize] VB_MenuBox is Empty");
+		return;
+	}
 	Cast<UMenuBoxChildWidget>(VB_MenuBox->GetChildAt(ChildPos))->Toggle();
 }
 
 void UMenuBoxWidget::Toggle(bool bIsDown)
 {
+	if (VB_MenuBox->GetChildrenCount() <= 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "[Initialize] VB_MenuBox is Empty");
+		return;
+	}
 	if (bIsDown && CurrentPos == VB_MenuBox->GetChildrenCount() - 1) return;
 	else if (!bIsDown && CurrentPos == 0) return;
 

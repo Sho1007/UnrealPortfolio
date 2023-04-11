@@ -10,8 +10,6 @@
 
 AGun::AGun() : AEquipment(EEquipmentType::Gun)
 {
-	PrimaryActorTick.bCanEverTick = true;
-	SetActorTickEnabled(true);
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	SetRootComponent(SkeletalMeshComponent);
 	SkeletalMeshComponent->SetSimulatePhysics(true);
@@ -23,6 +21,7 @@ AGun::AGun() : AEquipment(EEquipmentType::Gun)
 
 void AGun::BeginPlay()
 {
+	Super::BeginPlay();
 }
 
 bool AGun::Fire()
@@ -89,7 +88,6 @@ void AGun::PlayFireSound()
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "Sound Fire is not valid");
 		return;
 	}
-	//FireSoundComponent->Deactivate();
 }
 
 void AGun::FireSingle()
@@ -224,6 +222,6 @@ void AGun::ChangeFireMode()
 {
 	CurrentFireMode = (CurrentFireMode + 1) % GunInfo.FireModes.Num();
 
-	// Todo : [현재 발사 모드 화면]출력 기능 구현 필요
+	//// Todo : [현재 발사 모드 화면]출력 기능 구현 필요
 	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, UEnum::GetValueAsString(GunInfo.FireModes[CurrentFireMode]));
 }
