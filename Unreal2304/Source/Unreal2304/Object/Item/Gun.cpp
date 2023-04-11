@@ -2,6 +2,7 @@
 
 
 #include "../Item/Gun.h"
+#include "../Item/Scope.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "../../Character/MyCharacter.h"
@@ -118,8 +119,15 @@ void AGun::FireSingle()
 		return;
 	}
 
-	
-	FVector FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+	FVector FireDirection;
+	if (Scope != NULL && Scope->IsValidLowLevelFast())
+	{
+		FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+	}
+	else
+	{
+		FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+	}
 	FireDirection.Normalize();
 
 	Bullet->Fire(FireDirection);
@@ -183,6 +191,17 @@ void AGun::FireStop()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, GunInfo.Sound_Loop_TailClose, SkeletalMeshComponent->GetSocketLocation(FirePosName));
 	}
+}
+
+void AGun::SetScope(TObjectPtr<AScope> NewScope)
+{
+	if (Scope != NULL && Scope->IsValidLowLevelFast())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, "[SetScope] Scope is already exist");
+		return;
+	}
+	Scope = NewScope;
+	Scope->AttachToGun(SkeletalMeshComponent);
 }
 
 void AGun::Interact(TObjectPtr<AActor> Character, uint8 SelectNum)

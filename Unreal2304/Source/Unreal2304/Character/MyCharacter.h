@@ -21,6 +21,7 @@ enum class EGunSlot : uint8
 	Secondary,
 };
 
+class AScope;
 UCLASS()
 class UNREAL2304_API AMyCharacter : public ACharacter, public IInteractive
 {
@@ -84,6 +85,7 @@ private:
 public:
 	bool PickupItem(FItemData ItemData);
 	bool EquipGun(TObjectPtr<AGun> GunActor);
+	bool EquipScope(TObjectPtr<AScope> NewScope);
 
 	FVector GetZeroPointLocation();
 	void ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil);

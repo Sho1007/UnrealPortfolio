@@ -7,6 +7,7 @@
 #include "../Interface/Interactive.h"
 #include "../Widget/MenuBoxWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../Object/Item/Scope.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -320,6 +321,17 @@ bool AMyCharacter::EquipGun(TObjectPtr<AGun> GunActor)
 	{
 		SecondaryGun = GunActor;
 		UpdateGunAttachment();
+		return true;
+	}
+
+	return false;
+}
+
+bool AMyCharacter::EquipScope(TObjectPtr<AScope> NewScope)
+{
+	if (EquippedGun() != NULL && EquippedGun()->IsValidLowLevelFast())
+	{
+		EquippedGun()->SetScope(NewScope);
 		return true;
 	}
 

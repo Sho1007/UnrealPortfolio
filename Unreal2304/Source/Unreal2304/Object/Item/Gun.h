@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/DataTable.h"
 
+
 #include "Gun.generated.h"
 
 /**
@@ -53,7 +54,7 @@ struct FGunInfo : public FTableRowBase
 	TObjectPtr<USoundBase> Sound_Loop_TailClose;
 };
 
-
+class AScope;
 UCLASS()
 class UNREAL2304_API AGun : public AEquipment
 {
@@ -66,7 +67,8 @@ public:
 
 	bool Fire();
 	void FireStop();
-
+	void SetScope(TObjectPtr<AScope> NewScope);
+		
 	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override;
 
 	void AttachToCharacter(TObjectPtr<ACharacter> Character, FName SocketName);
@@ -84,6 +86,8 @@ private:
 	TObjectPtr<ACharacter> Owner;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AMagazine> Magazine;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AScope> Scope;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 CurrentFireMode;
 	bool bCanFire = true;
