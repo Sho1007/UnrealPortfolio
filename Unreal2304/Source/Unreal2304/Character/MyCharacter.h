@@ -88,6 +88,7 @@ public:
 	bool EquipScope(TObjectPtr<AScope> NewScope);
 
 	FVector GetZeroPointLocation();
+	float GetZeroPoint() { return ZeroPoint; }
 	void ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil);
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UCameraComponent* GetPlayerCamera() { return CameraComponent; }

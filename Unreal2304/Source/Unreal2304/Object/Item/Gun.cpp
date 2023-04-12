@@ -122,12 +122,13 @@ void AGun::FireSingle()
 	FVector FireDirection;
 	if (Scope != NULL && Scope->IsValidLowLevelFast())
 	{
-		FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+		FireDirection = Scope->GetActorLocation() + (Cast<AMyCharacter>(Owner)->GetZeroPoint() * -100 * Scope->GetActorForwardVector());
 	}
 	else
 	{
-		FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation() - FireTransform.GetLocation();
+		FireDirection = Cast<AMyCharacter>(Owner)->GetZeroPointLocation();
 	}
+	FireDirection -= FireTransform.GetLocation();
 	FireDirection.Normalize();
 
 	Bullet->Fire(FireDirection);
@@ -142,22 +143,22 @@ void AGun::FireSingle()
 	}
 
 	// Todo : Apply Reocil
-	ApplyRecoilToCharacter();
+	ApplyRecoilToCharacter(); 
 
 	// Todo : Play Sound
 	PlayFireSound();
 
 	Cast<AMyCharacter>(Owner)->PlayGunFireAnimMontage(60.0f / GunInfo.RateOfFire);
 
-	/*if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
+	if (MuzzleFlash == NULL || !MuzzleFlash->IsValidLowLevelFast())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("MuzzleFlash is null or not valid"));
 	}
 	else
 	{
 		FActorSpawnParameters ActorSpawnParameters;
-		GetWorld()->SpawnActor<AActor>(MuzzleFlash->StaticClass(), FireTransform, ActorSpawnParameters);
-	}*/
+		GetWorld()->SpawnActor<AActor>(MuzzleFlash, FireTransform, ActorSpawnParameters);
+	}
 
 	return;
 }
