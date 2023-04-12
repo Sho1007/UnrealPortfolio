@@ -8,6 +8,9 @@
 #include "../Widget/MenuBoxWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Object/Item/Scope.h"
+#include "HealthComponent.h"
+
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -15,6 +18,14 @@ AMyCharacter::AMyCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Mesh_Object(TEXT("'/Game/Characters/Mannequin_UE4/Meshes/SK_Mannequin.SK_Mannequin'"));
+
+	if (SK_Mesh_Object.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(SK_Mesh_Object.Object);
+	}
+	
+
 	// Camera Component Settings
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
@@ -29,6 +40,9 @@ AMyCharacter::AMyCharacter()
 	MenuBoxWidgetComponent->SetDrawAtDesiredSize(true);
 	MenuBoxWidgetComponent->SetupAttachment(CameraComponent);
 	MenuBoxWidgetComponent->SetRelativeLocation(FVector(1, 0, 0));
+
+	// Health Component;
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +54,22 @@ void AMyCharacter::BeginPlay()
 	CameraComponent->SetRelativeLocation(FVector(10, 0, 0));
 	//SpringArmComponent->ResetRelativeTransform();
 	GunRecoilFactor = GunRecoilFactor_Base;
+
+
+	// Health Component
+	HealthComponent->CreateCapsule(12.5f, 9.0f, "head", FTransform(FRotator(90, 0, 0), FVector(5, 3, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(23.0f, 17.0f, "spine_03", FTransform(FRotator(90, 0, 0), FVector(-5, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(15.0f, 15.0f, "spine_01", FTransform(FRotator(0, 0, 0), FVector(0, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(20.0f, 7.0f, "upperarm_r", FTransform(FRotator(90, 0, 0), FVector(-17, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(13.0f, 5.0f, "lowerarm_r", FTransform(FRotator(90, 0, 0), FVector(-17, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(20.0f, 7.0f, "upperarm_l", FTransform(FRotator(90, 0, 0), FVector(17, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(13.0f, 5.0f, "lowerarm_l", FTransform(FRotator(90, 0, 0), FVector(17, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(25.0f, 9.0f, "thigh_r", FTransform(FRotator(90, 0, 0), FVector(18, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(21.0f, 6.0f, "calf_r", FTransform(FRotator(90, 0, 0), FVector(19, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(15.0f, 5.0f, "ball_r", FTransform(FRotator(90, 20, 0), FVector(10, 2, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(25.0f, 9.0f, "thigh_l", FTransform(FRotator(90, 0, 0), FVector(-18, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(21.0f, 6.0f, "calf_l", FTransform(FRotator(90, 0, 0), FVector(-19, 0, 0), FVector(1, 1, 1)));
+	HealthComponent->CreateCapsule(15.0f, 5.0f, "ball_l", FTransform(FRotator(90, 20, 0), FVector(-10, -2, 0), FVector(1, 1, 1)));
 }
 
 // Called every frame

@@ -20,8 +20,8 @@ ABullet::ABullet()
 
 void ABullet::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, OtherActor->GetName());
-	Destroy();
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, OtherActor->GetName());
+	//Destroy();
 }
 
 void ABullet::Fire(FVector MoveDirection)

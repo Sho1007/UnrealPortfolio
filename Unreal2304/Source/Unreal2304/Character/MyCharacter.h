@@ -22,6 +22,7 @@ enum class EGunSlot : uint8
 };
 
 class AScope;
+class UHealthComponent;
 UCLASS()
 class UNREAL2304_API AMyCharacter : public ACharacter, public IInteractive
 {
@@ -112,11 +113,14 @@ public:
 	virtual TArray<FText>& GetMenuText() override;
 
 private:
+
 	// Component Var
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> CameraComponent;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 	// Movement Var
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
