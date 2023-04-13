@@ -8,7 +8,7 @@
 #include "../Widget/MenuBoxWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Object/Item/Scope.h"
-#include "HealthComponent.h"
+#include "../Component/HealthComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -57,19 +57,16 @@ void AMyCharacter::BeginPlay()
 
 
 	// Health Component
-	HealthComponent->CreateCapsule(12.5f, 9.0f, "head", FTransform(FRotator(90, 0, 0), FVector(5, 3, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(23.0f, 17.0f, "spine_03", FTransform(FRotator(90, 0, 0), FVector(-5, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(15.0f, 15.0f, "spine_01", FTransform(FRotator(0, 0, 0), FVector(0, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(20.0f, 7.0f, "upperarm_r", FTransform(FRotator(90, 0, 0), FVector(-17, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(13.0f, 5.0f, "lowerarm_r", FTransform(FRotator(90, 0, 0), FVector(-17, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(20.0f, 7.0f, "upperarm_l", FTransform(FRotator(90, 0, 0), FVector(17, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(13.0f, 5.0f, "lowerarm_l", FTransform(FRotator(90, 0, 0), FVector(17, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(25.0f, 9.0f, "thigh_r", FTransform(FRotator(90, 0, 0), FVector(18, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(21.0f, 6.0f, "calf_r", FTransform(FRotator(90, 0, 0), FVector(19, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(15.0f, 5.0f, "ball_r", FTransform(FRotator(90, 20, 0), FVector(10, 2, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(25.0f, 9.0f, "thigh_l", FTransform(FRotator(90, 0, 0), FVector(-18, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(21.0f, 6.0f, "calf_l", FTransform(FRotator(90, 0, 0), FVector(-19, 0, 0), FVector(1, 1, 1)));
-	HealthComponent->CreateCapsule(15.0f, 5.0f, "ball_l", FTransform(FRotator(90, 20, 0), FVector(-10, -2, 0), FVector(1, 1, 1)));
+	
+	/*
+	HealthComponent->CreateHealth("Head", 50, 50);
+	HealthComponent->CreateHealth("Thorax", 50, 50);
+	HealthComponent->CreateHealth("Stomach", 50, 50);
+	HealthComponent->CreateHealth("RightArm", 50, 50);
+	HealthComponent->CreateHealth("LeftArm", 50, 50);
+	HealthComponent->CreateHealth("RightLeg", 50, 50);
+	HealthComponent->CreateHealth("LeftLeg", 50, 50);
+	*/
 }
 
 // Called every frame
@@ -93,7 +90,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Wheel Up", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelUp);
 	PlayerInputComponent->BindAction("Wheel Down", EInputEvent::IE_Pressed, this, &AMyCharacter::WheelDown);
 
-	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AMyCharacter::Crouch);
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AMyCharacter::CrouchPressed);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMyCharacter::JumpPressed);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AMyCharacter::JumpReleased);
 
@@ -158,7 +155,7 @@ void AMyCharacter::CreateMenuBoxWidget(TArray<FText>& _MenuText)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "4. MenuBox Widget Class is Valid");
 		MenuBoxWidget = Cast<UMenuBoxWidget>(CreateWidget(GetWorld(), MenuBoxWidgetClass));
-		MenuBoxWidget->Initialize(_MenuText);
+		MenuBoxWidget->Init(_MenuText);
 		MenuBoxWidgetComponent->SetWidget(MenuBoxWidget);
 	}
 	else
@@ -215,7 +212,7 @@ void AMyCharacter::WheelDown()
 	}
 }
 
-void AMyCharacter::Crouch()
+void AMyCharacter::CrouchPressed()
 {
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxWalkSpeed = bCrouchButtonDown ? 270 : 100;
 

@@ -4,7 +4,7 @@
 #include "../Widget/MenuBoxWidget.h"
 #include "../Widget/MenuBoxChildWidget.h"
 
-void UMenuBoxWidget::Initialize(TArray<FText>& MenuText)
+void UMenuBoxWidget::Init(TArray<FText>& MenuText)
 {
 	if (MenuText.Num() <= 0)
 	{

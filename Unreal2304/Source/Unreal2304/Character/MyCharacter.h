@@ -61,7 +61,7 @@ private:
 	void WheelUp();
 	void WheelDown();
 
-	void Crouch();
+	void CrouchPressed();
 	void JumpPressed();
 	void JumpReleased();
 

@@ -18,7 +18,7 @@ class UNREAL2304_API UMenuBoxWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Initialize(TArray<FText>& MenuText);
+	void Init(TArray<FText>& MenuText);
 	void ToggleChildAt(int32 ChildPos);
 	void Toggle(bool bIsDown);
 	uint8 GetSelectNum() { return CurrentPos; }
