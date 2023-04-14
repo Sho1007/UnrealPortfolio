@@ -74,13 +74,12 @@ class UNREAL2304_API UHealth : public UObject
 {
 	GENERATED_BODY()
 
+friend class UHealthComponent;
 public:
 	void Init(TObjectPtr<UHealthComponent> NewOwner, FName NewName, EBodyType NewBodyType, float NewHealthCurrent, float NewHealthMax);
 	void AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHalfHeight, float NewRadius, FName NewSocketName, FTransform NewRelativeTransform);
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void BleedFunction();
 private:
 	void Bleed();
 	
@@ -96,6 +95,6 @@ private:
 	TObjectPtr<UHealthComponent> Owner;
 
 	// Bleed
-	bool bIsBleed;
+	bool bIsBleed = false;
 	FTimerHandle BleedTimerHandle;
 };

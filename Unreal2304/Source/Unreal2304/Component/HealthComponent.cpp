@@ -58,3 +58,28 @@ void UHealthComponent::CreateCapsules()
 	HealthArray[StaticCast<uint8>(EBodyType::LeftLeg) - 1]->AddCapsule(NewMesh, 21.0f, 6.0f, "calf_l", FTransform(FRotator(90, 0, 0), FVector(-19, 0, 0), FVector(1, 1, 1)));
 	HealthArray[StaticCast<uint8>(EBodyType::LeftLeg) - 1]->AddCapsule(NewMesh, 15.0f, 5.0f, "ball_l", FTransform(FRotator(90, 20, 0), FVector(-10, -2, 0), FVector(1, 1, 1)));
 }
+
+void UHealthComponent::AddBleed()
+{
+	if (++BleedCount == 1)
+	{
+		Bleeding();
+		GetWorld()->GetTimerManager().SetTimer(BleedingTimerHandle, this, &UHealthComponent::Bleeding, 6, true);
+	}
+}
+
+void UHealthComponent::SubBleed()
+{
+	if (--BleedCount == 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
+	}
+}
+
+void UHealthComponent::Bleeding()
+{
+	for (int i = 0; i < HealthArray.Num(); ++i)
+	{
+		HealthArray[i]->ApplyDamage(BleedCount, EDamageType::Bleed);
+	}
+}

@@ -16,8 +16,9 @@ void UHealth::Init(TObjectPtr<UHealthComponent> NewOwner, FName NewName, EBodyTy
 	{
 		BlackOut();
 	}
+	// Todo : Status 를 Data에서 받아서 Init해주기
 	StatusArray.Init(false, (uint8)EStatusType::Size);
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, FString::Printf(TEXT("StatusArray Size : %d"), StatusArray.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, FString::Printf(TEXT("StatusArray Size : %d"), StatusArray.Num()));
 }
 
 void UHealth::BlackOut()
@@ -42,19 +43,18 @@ void UHealth::AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHa
 
 void UHealth::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	OtherActor->Destroy();
 	ApplyDamage(10.0f, EDamageType::Physics);
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
+
+	// Todo : Bleed 확률 추가
+	Bleed();
 }
 
 void UHealth::Bleed()
 {
 	if (bIsBleed) return; bIsBleed = true;
-	GetWorld()->GetTimerManager().SetTimer(BleedTimerHandle, this, &UHealth::BleedFunction, 6, true);
+	Owner->AddBleed();
 	// Bleed Image 추가
-}
-void UHealth::BleedFunction()
-{
-
 }
 
 void UHealth::ApplyDamage(float NewDamage, EDamageType NewDamageType)
@@ -76,4 +76,5 @@ void UHealth::ApplyDamage(float NewDamage, EDamageType NewDamageType)
 			BlackOut();
 		}
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
 }

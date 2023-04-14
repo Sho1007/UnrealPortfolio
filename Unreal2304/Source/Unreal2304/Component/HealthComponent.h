@@ -12,6 +12,7 @@ class UNREAL2304_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+friend class UHealth;
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
@@ -27,6 +28,14 @@ public:
 private:
 	void InitHealthArray();
 	void CreateCapsules();
+
+	void AddBleed();
+	void SubBleed();
+	UFUNCTION(meta = (AllowPrivateAccess = true))
+	void Bleeding();
 private:
 	TArray<TObjectPtr<UHealth>> HealthArray;
+
+	uint8 BleedCount = 0;
+	FTimerHandle BleedingTimerHandle;
 };
