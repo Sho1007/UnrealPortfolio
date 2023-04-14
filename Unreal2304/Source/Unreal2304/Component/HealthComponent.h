@@ -16,26 +16,34 @@ friend class UHealth;
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;	
-
+	bool CheckIsDead() { return bIsDead; }
 private:
 	void InitHealthArray();
 	void CreateCapsules();
 
-	void AddBleed();
-	void SubBleed();
+	void Dead();
+
+	void AddLightBleed();
+	void SubLightBleed();
+	void AddHeavyBleed();
+	void SubHeavyBleed();
 	UFUNCTION(meta = (AllowPrivateAccess = true))
-	void Bleeding();
+	void LightBleeding();
+	UFUNCTION(meta = (AllowPrivateAccess = true))
+	void HeavyBleeding();
 private:
 	TArray<TObjectPtr<UHealth>> HealthArray;
 
-	uint8 BleedCount = 0;
-	FTimerHandle BleedingTimerHandle;
+	bool bIsDead = false;
+
+	uint8 LightBleedCount = 0;
+	FTimerHandle LightBleedingTimerHandle;
+	uint8 HeavyBleedCount = 0;
+	FTimerHandle HeavyBleedingTimerHandle;
 };

@@ -27,9 +27,11 @@ UCLASS()
 class UNREAL2304_API AMyCharacter : public ACharacter, public IInteractive
 {
 	GENERATED_BODY()
-	
-// Gun이 Character 의 private 에 접근할 필요가 있을까?
-//friend class AGun;
+
+		friend class UHealth;
+	friend class AMyPlayer;
+	// Gun이 Character 의 private 에 접근할 필요가 있을까?
+	//friend class AGun;
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
@@ -38,51 +40,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-private:
-	void CheckInteract();
-	void CreateMenuBoxWidget(TArray<FText>& MenuText);
-	void DeleteMenuBoxWidget();
-
-// Movement Input Bind
-private:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-
-	void LookUp(float Value);
-	void TurnRight(float Value);
-
-	void WheelUp();
-	void WheelDown();
-
-	void CrouchPressed();
-	void JumpPressed();
-	void JumpReleased();
-
-	void InteractPressed();
-
-	void AttackPressed();
-	void AttackReleased();
-
-	void AimingPressed();
-
-	void StopBreathPressed();
-	void StopBreathReleased();
-
-	void ChangeFireMode();
-
-	
 
 private:
 	bool EquipItem(TObjectPtr<AEquipment> Item);
 
-// Gun
+	// Gun
 public:
 	bool PickupItem(FItemData ItemData);
 	bool EquipGun(TObjectPtr<AGun> GunActor);
@@ -92,84 +61,80 @@ public:
 	float GetZeroPoint() { return ZeroPoint; }
 	void ApplyGunRecoil(int32 VerticalRecoil, int32 HorizontalRecoil);
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UCameraComponent* GetPlayerCamera() { return CameraComponent; }
+		UCameraComponent* GetPlayerCamera() { return CameraComponent; }
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetAimButtonDown() { return bAimButtonDown; }
+		bool GetAimButtonDown() { return bAimButtonDown; }
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetStopBreath() { return bStopBreath; }
+		bool GetStopBreath() { return bStopBreath; }
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		bool GetCrouchButtonDown() { return bCrouchButtonDown; }
 	void PlayGunFireAnimMontage(float Rate);
 
-private:
+protected:
 	void UpdateGunAttachment();
 	TObjectPtr<AGun> EquippedGun();
 	TObjectPtr<AGun> StowedGun();
 
+
 	void AdjustGunRecoilFactor();
 
-	
+
+private:
+	void Dead();
+
 public:
 	// Inherited via IInteractive
 	virtual void Interact(TObjectPtr<AActor> Actor, uint8 SelectNum) override;
-	virtual TArray<FText>& GetMenuText() override;
+	virtual TObjectPtr<TArray<FText>> GetMenuText() override;
 
-private:
-
+protected:
 	// Component Var
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<USpringArmComponent> SpringArmComponent;
+		TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCameraComponent> CameraComponent;
+		TObjectPtr<UCameraComponent> CameraComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UHealthComponent> HealthComponent;
-
+		TObjectPtr<UHealthComponent> HealthComponent;
 	// Movement Var
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	bool bJumpButtonDown = false;
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	bool bCrouchButtonDown = false;
+		bool bJumpButtonDown = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		bool bCrouchButtonDown = false;
 
 	// Interact Var
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float InteractCheckRadius = 5.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float InteractCheckLength = 120.0f;
-	TObjectPtr<AActor> InteractActor;
-	TArray<FText> MenuText;
+		TArray<FText> MenuText;
 
-	// Interact Widget Var
-	TObjectPtr<UWidgetComponent> MenuBoxWidgetComponent;
-	TObjectPtr<UMenuBoxWidget> MenuBoxWidget;
-
+protected:
 	// Gun Var
 	EGunSlot CurrentGunSlot = EGunSlot::Primary;
 	TObjectPtr<AGun> PrimaryGun = NULL;
 	TObjectPtr<AGun> SecondaryGun = NULL;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> FireHip_AnimMontage;
+		TObjectPtr<UAnimMontage> FireHip_AnimMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> FireIronsight_AnimMontage;
+		TObjectPtr<UAnimMontage> FireIronsight_AnimMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float ZeroPoint = 50.0f;
+		float ZeroPoint = 50.0f;
+
+protected:
 	// Gun Recoil
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float GunRecoilFactor_Base = 0.01f;
+		float GunRecoilFactor_Base = 0.01f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float GunRecoilFactor_Min = 0.001f;
+		float GunRecoilFactor_Min = 0.001f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float GunRecoilFactor_Adjust_Amount = 0.001f;
+		float GunRecoilFactor_Adjust_Amount = 0.001f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float GunRecoilFactor_Adjust_Rate = 0.1f;
+		float GunRecoilFactor_Adjust_Rate = 0.1f;
 
 	float GunRecoilFactor = 0.01f;
-	
+
 
 	FTimerHandle GunRecoilTimerHandle;
 
 	// Aiming Var
 	bool bAimButtonDown = false;
 	bool bStopBreath = false;
-protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UUserWidget> MenuBoxWidgetClass;
 };

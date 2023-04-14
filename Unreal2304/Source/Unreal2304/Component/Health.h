@@ -76,12 +76,18 @@ class UNREAL2304_API UHealth : public UObject
 
 friend class UHealthComponent;
 public:
+
 	void Init(TObjectPtr<UHealthComponent> NewOwner, FName NewName, EBodyType NewBodyType, float NewHealthCurrent, float NewHealthMax);
 	void AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHalfHeight, float NewRadius, FName NewSocketName, FTransform NewRelativeTransform);
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	bool CheckIsBlackOut() { return bIsBlackOut; }
+
+	void Disactive();
 private:
-	void Bleed();
+	void LightBleed();
+	void HeavyBleed();
 	
 	void BlackOut();
 	void ApplyDamage(float NewDamage, EDamageType NewDamageType);
@@ -93,8 +99,10 @@ private:
 	TArray<TObjectPtr<UCapsuleComponent>> CapsuleArray;
 	TArray<bool> StatusArray;
 	TObjectPtr<UHealthComponent> Owner;
+	
+	// BlackOut
+	bool bIsBlackOut = false;
 
 	// Bleed
-	bool bIsBleed = false;
 	FTimerHandle BleedTimerHandle;
 };

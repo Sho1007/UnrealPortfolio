@@ -6,7 +6,7 @@ AItem::AItem()
 {
 }
 
-TArray<FText>& AItem::GetMenuText()
+TObjectPtr<TArray<FText>> AItem::GetMenuText()
 {
-	return MenuText;
+	return &MenuText;
 }

@@ -19,11 +19,15 @@ void UHealth::Init(TObjectPtr<UHealthComponent> NewOwner, FName NewName, EBodyTy
 	// Todo : Status 를 Data에서 받아서 Init해주기
 	StatusArray.Init(false, (uint8)EStatusType::Size);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, FString::Printf(TEXT("StatusArray Size : %d"), StatusArray.Num()));
+
+
 }
 
 void UHealth::BlackOut()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("%s BlackOuted"), *Name.ToString()));
+	if (bIsBlackOut) return;
+	bIsBlackOut = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("BlackOuted")));
 }
 
 void UHealth::AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHalfHeight, float NewRadius, FName NewSocketName, FTransform NewRelativeTransform)
@@ -47,34 +51,53 @@ void UHealth::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	ApplyDamage(10.0f, EDamageType::Physics);
 
 	// Todo : Bleed 확률 추가
-	Bleed();
+	LightBleed();
 }
 
-void UHealth::Bleed()
+void UHealth::LightBleed()
 {
-	if (bIsBleed) return; bIsBleed = true;
-	Owner->AddBleed();
+	if (StatusArray[(uint8)EStatusType::LightBleeding]) return;
+	StatusArray[(uint8)EStatusType::LightBleeding] = true;
+	Owner->AddLightBleed();
 	// Bleed Image 추가
+}
+
+void UHealth::HeavyBleed()
+{
+	if (StatusArray[(uint8)EStatusType::HeavyBleeding]) return;
+	StatusArray[(uint8)EStatusType::HeavyBleeding] = true;
+	Owner->AddHeavyBleed();
+	// Heavy Bleed Image 추가
+}
+
+void UHealth::Disactive()
+{
+	for (int i = 0; i < CapsuleArray.Num(); ++i)
+	{
+		CapsuleArray[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void UHealth::ApplyDamage(float NewDamage, EDamageType NewDamageType)
 {
-	if (HealthCurrent == 0)
+	if (bIsBlackOut)
 	{
 		// 현재 블랙아웃 상태
 	}
 	else
 	{
 		// 블랙 아웃이 아닌 상태
-		HealthCurrent = FMath::Max(0, HealthCurrent - NewDamage);
-		if (HealthCurrent == 0)
+		HealthCurrent = HealthCurrent - NewDamage;
+		if (HealthCurrent <= 0)
 		{
+			HealthCurrent = 0;
+			BlackOut();
 			if (BodyType == EBodyType::Thorax || (BodyType == EBodyType::Head && NewDamageType != EDamageType::Bleed))
 			{
-				// Todo : Character Death
+				Owner->Dead();
 			}
-			BlackOut();
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
+	//UE_LOG(LogTemp, Warning, TEXT("%s : %f"), *Name.ToString(), HealthCurrent);
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
 }

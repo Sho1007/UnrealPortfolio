@@ -24,8 +24,6 @@ void UHealthComponent::BeginPlay()
 	InitHealthArray();
 	CreateCapsules();
 }
-
-
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -59,27 +57,71 @@ void UHealthComponent::CreateCapsules()
 	HealthArray[StaticCast<uint8>(EBodyType::LeftLeg) - 1]->AddCapsule(NewMesh, 15.0f, 5.0f, "ball_l", FTransform(FRotator(90, 20, 0), FVector(-10, -2, 0), FVector(1, 1, 1)));
 }
 
-void UHealthComponent::AddBleed()
+void UHealthComponent::Dead()
 {
-	if (++BleedCount == 1)
-	{
-		Bleeding();
-		GetWorld()->GetTimerManager().SetTimer(BleedingTimerHandle, this, &UHealthComponent::Bleeding, 6, true);
-	}
-}
+	if (bIsDead) return;
+	bIsDead = true;
 
-void UHealthComponent::SubBleed()
-{
-	if (--BleedCount == 0)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
-	}
-}
+	GetWorld()->GetTimerManager().ClearTimer(LightBleedingTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(HeavyBleedingTimerHandle);
 
-void UHealthComponent::Bleeding()
-{
+	Cast<ACharacter>(GetOwner())->GetMesh()->SetCollisionProfileName("DroppedItem");
+	Cast<ACharacter>(GetOwner())->GetMesh()->SetSimulatePhysics(true);
+
 	for (int i = 0; i < HealthArray.Num(); ++i)
 	{
-		HealthArray[i]->ApplyDamage(BleedCount, EDamageType::Bleed);
+		HealthArray[i]->Disactive();
+	}
+}
+
+void UHealthComponent::AddLightBleed()
+{
+	if (++LightBleedCount == 1)
+	{
+		GetWorld()->GetTimerManager().SetTimer(LightBleedingTimerHandle, this, &UHealthComponent::LightBleeding, 6, true);
+	}
+}
+
+void UHealthComponent::SubLightBleed()
+{
+	if (--LightBleedCount == 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(LightBleedingTimerHandle);
+	}
+}
+
+void UHealthComponent::AddHeavyBleed()
+{
+	if (++HeavyBleedCount == 1)
+	{
+		GetWorld()->GetTimerManager().SetTimer(HeavyBleedingTimerHandle, this, &UHealthComponent::HeavyBleeding, 4, true);
+	}
+}
+
+void UHealthComponent::SubHeavyBleed()
+{
+	if (--HeavyBleedCount == 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(HeavyBleedingTimerHandle);
+	}
+}
+
+void UHealthComponent::LightBleeding()
+{
+	//UE_LOG(LogTemp, Error, TEXT("[Light Bleeding]"));
+	for (int i = 0; i < HealthArray.Num(); ++i)
+	{
+		if (HealthArray[i]->CheckIsBlackOut()) continue;
+		HealthArray[i]->ApplyDamage(LightBleedCount * 0.8, EDamageType::Bleed);
+	}
+}
+
+void UHealthComponent::HeavyBleeding()
+{
+	//UE_LOG(LogTemp, Error, TEXT("[Heavy Bleeding]"));
+	for (int i = 0; i < HealthArray.Num(); ++i)
+	{
+		if (HealthArray[i]->CheckIsBlackOut()) continue;
+		HealthArray[i]->ApplyDamage(HeavyBleedCount * 0.9, EDamageType::Bleed);
 	}
 }

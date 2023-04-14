@@ -78,7 +78,7 @@ public:
 	AItem();
 	// Inherited via IInteractive
 	virtual void Interact(TObjectPtr<AActor> Character, uint8 SelectNum) override {}
-	virtual TArray<FText>& GetMenuText() override;
+	virtual TObjectPtr<TArray<FText>> GetMenuText() override;
 
 	EItemState GetItemState() { return ItemData.ItemState; }
 
