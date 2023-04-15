@@ -138,9 +138,9 @@ void AMyPlayer::InteractPressed()
 {
 	if (InteractActor == NULL || !InteractActor->IsValidLowLevelFast()) return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("%s"), *InteractActor->GetName()));
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("%s"), *InteractActor->GetName()));
 
-	//Cast<IInteractive>(InteractActor)->Interact(this, MenuBoxWidget->GetSelectNum());
+	Cast<IInteractive>(InteractActor)->Interact(this, MenuBoxWidget->GetSelectNum());
 }
 
 void AMyPlayer::WheelUp()
@@ -188,8 +188,6 @@ void AMyPlayer::CrouchPressed()
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxWalkSpeed = bCrouchButtonDown ? 270 : 100;
 
 	bCrouchButtonDown = !bCrouchButtonDown;
-
-	UE_LOG(LogTemp, Warning, TEXT("%d"), bCrouchButtonDown);
 }
 
 void AMyPlayer::JumpPressed()

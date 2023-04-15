@@ -74,6 +74,15 @@ void UHealthComponent::Dead()
 	}
 }
 
+void UHealthComponent::DesperseDamage(float NewDamage, float DesperseFactor)
+{
+	for (int i = 0; i < HealthArray.Num(); ++i)
+	{
+		if (HealthArray[i]->CheckIsBlackOut()) continue;
+		HealthArray[i]->ApplyDamage(NewDamage * DesperseFactor, EDamageType::Physics);
+	}
+}
+
 void UHealthComponent::AddLightBleed()
 {
 	if (++LightBleedCount == 1)

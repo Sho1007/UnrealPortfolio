@@ -29,6 +29,8 @@ private:
 
 	void Dead();
 
+	void DesperseDamage(float NewDamage, float DesperseFactor);
+
 	void AddLightBleed();
 	void SubLightBleed();
 	void AddHeavyBleed();

@@ -34,6 +34,9 @@ public:
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	void Fire(FVector MoveDirection);
 	EBulletType GetBulletType() { return BulletType; }
+	float GetDamage() { return Damage; }
+	float GetLightBleedChance() { return LightBleedChance; }
+	float GetHeavyBleedChance() { return HeavyBleedChance; }
 private:
 	// Component
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))

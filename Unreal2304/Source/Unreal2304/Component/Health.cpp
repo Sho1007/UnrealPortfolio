@@ -4,6 +4,7 @@
 #include "../Component/Health.h"
 #include "Components/CapsuleComponent.h"
 #include "HealthComponent.h"
+#include "../Object/Item/Bullet.h"
 
 void UHealth::Init(TObjectPtr<UHealthComponent> NewOwner, FName NewName, EBodyType NewBodyType, float NewHealthCurrent, float NewHealthMax)
 {
@@ -27,7 +28,7 @@ void UHealth::BlackOut()
 {
 	if (bIsBlackOut) return;
 	bIsBlackOut = true;
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("BlackOuted")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("BlackOuted")));
 }
 
 void UHealth::AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHalfHeight, float NewRadius, FName NewSocketName, FTransform NewRelativeTransform)
@@ -47,11 +48,20 @@ void UHealth::AddCapsule(TObjectPtr<USkeletalMeshComponent> NewMesh, float NewHa
 
 void UHealth::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	OtherActor->Destroy();
-	ApplyDamage(10.0f, EDamageType::Physics);
+	if (TObjectPtr<ABullet> Bullet = Cast<ABullet>(OtherActor))
+	{
+		OtherActor->Destroy();
+		ApplyDamage(Bullet->GetDamage(), EDamageType::Physics);
 
-	// Todo : Bleed 확률 추가
-	LightBleed();
+		if (FMath::Rand() % 101 < Bullet->GetLightBleedChance())
+		{
+			LightBleed();
+		}
+		if (FMath::Rand() % 101 < Bullet->GetLightBleedChance())
+		{
+			HeavyBleed();
+		}
+	}
 }
 
 void UHealth::LightBleed()
@@ -83,6 +93,28 @@ void UHealth::ApplyDamage(float NewDamage, EDamageType NewDamageType)
 	if (bIsBlackOut)
 	{
 		// 현재 블랙아웃 상태
+		switch (BodyType)
+		{
+		case EBodyType::Head:
+		case EBodyType::Thorax:
+			Owner->Dead();
+			break;
+		case EBodyType::Stomach:
+			Owner->DesperseDamage(NewDamage, 1.5f);
+			break;
+		case EBodyType::RightArm:
+			Owner->DesperseDamage(NewDamage, 0.7f);
+			break;
+		case EBodyType::LeftArm:
+			Owner->DesperseDamage(NewDamage, 0.7f);
+			break;
+		case EBodyType::RightLeg:
+			Owner->DesperseDamage(NewDamage, 1.0f);
+			break;
+		case EBodyType::LeftLeg:
+			Owner->DesperseDamage(NewDamage, 1.0f);
+			break;
+		}
 	}
 	else
 	{
@@ -92,12 +124,12 @@ void UHealth::ApplyDamage(float NewDamage, EDamageType NewDamageType)
 		{
 			HealthCurrent = 0;
 			BlackOut();
-			if (BodyType == EBodyType::Thorax || (BodyType == EBodyType::Head && NewDamageType != EDamageType::Bleed))
+			if ((BodyType == EBodyType::Thorax || BodyType == EBodyType::Head ) && NewDamageType != EDamageType::Bleed)
 			{
 				Owner->Dead();
 			}
 		}
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("%s : %f"), *Name.ToString(), HealthCurrent);
-	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
+	//GEngine->AddOnScreenDebugMessage(-1, 300, FColor::Yellow, FString::Printf(TEXT("%s Health : %f"), *Name.ToString(), HealthCurrent));
 }
