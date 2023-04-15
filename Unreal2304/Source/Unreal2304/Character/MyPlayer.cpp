@@ -15,6 +15,19 @@ AMyPlayer::AMyPlayer()
 	MenuBoxWidgetComponent->SetDrawAtDesiredSize(true);
 	MenuBoxWidgetComponent->SetupAttachment(CameraComponent);
 	MenuBoxWidgetComponent->SetRelativeLocation(FVector(1, 0, 0));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widgets/WBP_MenuBox.WBP_MenuBox_C'"));
+
+	if (WidgetClass.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Find Widget Class Successfully"));
+		MenuBoxWidgetClass = WidgetClass.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Widget Class is Not Valid"));
+	}
+	
 }
 
 void AMyPlayer::Tick(float DeltaTime)
@@ -125,7 +138,9 @@ void AMyPlayer::InteractPressed()
 {
 	if (InteractActor == NULL || !InteractActor->IsValidLowLevelFast()) return;
 
-	Cast<IInteractive>(InteractActor)->Interact(this, MenuBoxWidget->GetSelectNum());
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("%s"), *InteractActor->GetName()));
+
+	//Cast<IInteractive>(InteractActor)->Interact(this, MenuBoxWidget->GetSelectNum());
 }
 
 void AMyPlayer::WheelUp()
