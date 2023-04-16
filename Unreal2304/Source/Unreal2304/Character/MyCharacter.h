@@ -21,6 +21,7 @@ enum class EGunSlot : uint8
 	Secondary,
 };
 
+class UInventoryComponent;
 class AScope;
 class UHealthComponent;
 UCLASS()
@@ -90,16 +91,19 @@ public:
 protected:
 	// Component Var
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-		TObjectPtr<USpringArmComponent> SpringArmComponent;
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-		TObjectPtr<UCameraComponent> CameraComponent;
+	TObjectPtr<UCameraComponent> CameraComponent;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-		TObjectPtr<UHealthComponent> HealthComponent;
-	// Movement Var
+	TObjectPtr<UHealthComponent> HealthComponent;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+		// Movement Var
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		bool bJumpButtonDown = false;
+	bool bJumpButtonDown = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		bool bCrouchButtonDown = false;
+	bool bCrouchButtonDown = false;
 
 	// Interact Var
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

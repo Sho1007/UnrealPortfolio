@@ -7,6 +7,7 @@
 #include "../Interface/Interactive.h"
 #include "../Object/Item/Scope.h"
 #include "../Component/HealthComponent.h"
+#include "../Component/InventoryComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -34,6 +35,8 @@ AMyCharacter::AMyCharacter()
 
 	// Health Component;
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	// Inventory Component;
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
 }
 
 // Called when the game starts or when spawned

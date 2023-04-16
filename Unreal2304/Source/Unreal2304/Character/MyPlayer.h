@@ -9,6 +9,7 @@
 /**
  * 
  */
+class UHUDWidget;
 UCLASS()
 class UNREAL2304_API AMyPlayer : public AMyCharacter
 {
@@ -16,6 +17,7 @@ class UNREAL2304_API AMyPlayer : public AMyCharacter
 	
 public:
 	AMyPlayer();
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 private:
@@ -46,6 +48,8 @@ private:
 	void StopBreathReleased();
 
 	void ChangeFireMode();
+
+	void TabPressed();
 private:
 	// Interact Var
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -59,4 +63,8 @@ private:
 	TObjectPtr<UMenuBoxWidget> MenuBoxWidget;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> MenuBoxWidgetClass;
+
+	// HUD Widget Var
+	TSubclassOf<UUserWidget> HUDWidgetClass;
+	TObjectPtr<UHUDWidget> HUDWidget;
 };

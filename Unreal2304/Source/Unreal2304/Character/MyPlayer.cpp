@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Widget/MenuBoxWidget.h"
+#include "../Widget/HUDWidget.h"
 
 AMyPlayer::AMyPlayer()
 	: AMyCharacter()
@@ -16,18 +17,36 @@ AMyPlayer::AMyPlayer()
 	MenuBoxWidgetComponent->SetupAttachment(CameraComponent);
 	MenuBoxWidgetComponent->SetRelativeLocation(FVector(1, 0, 0));
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widgets/WBP_MenuBox.WBP_MenuBox_C'"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBoxWidgetClassFinder(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widgets/WBP_MenuBox.WBP_MenuBox_C'"));
 
-	if (WidgetClass.Succeeded())
+	if (MenuBoxWidgetClassFinder.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Find Widget Class Successfully"));
-		MenuBoxWidgetClass = WidgetClass.Class;
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Find MenuBox Widget Class Successfully"));
+		MenuBoxWidgetClass = MenuBoxWidgetClassFinder.Class;
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Widget Class is Not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] MenuBox Widget Class is Not Valid"));
 	}
-	
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> HUDWidgetClassFinder(TEXT("WidgetBlueprint'/Game/Blueprints/Widgets/WBP_HUD.WBP_HUD_C'"));
+
+	if (HUDWidgetClassFinder.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] Find HUD Widget Class Successfully"));
+		HUDWidgetClass = HUDWidgetClassFinder.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMyPlayer] HUD Widget Class is Not Valid"));
+	}
+}
+
+void AMyPlayer::BeginPlay()
+{
+	AMyCharacter::BeginPlay();
+	HUDWidget = CreateWidget<UHUDWidget>(Cast<APlayerController>(GetController()), HUDWidgetClass);
+	HUDWidget->AddToPlayerScreen(0);
 }
 
 void AMyPlayer::Tick(float DeltaTime)
@@ -65,6 +84,8 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 
 	PlayerInputComponent->BindAction("ChangeFireMode", EInputEvent::IE_Pressed, this, &AMyPlayer::ChangeFireMode);
+
+	PlayerInputComponent->BindAction("Tab", EInputEvent::IE_Pressed, this, &AMyPlayer::TabPressed);
 }
 
 void AMyPlayer::CheckInteract()
@@ -181,6 +202,11 @@ void AMyPlayer::LookUp(float Value)
 void AMyPlayer::TurnRight(float Value)
 {
 	AddControllerYawInput(Value);
+}
+
+void AMyPlayer::TabPressed()
+{
+	HUDWidget->SwitchWidget();
 }
 
 void AMyPlayer::CrouchPressed()
