@@ -39,7 +39,7 @@ void ADestination::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	if (TObjectPtr<AMyPlayer> Player = Cast<AMyPlayer>(OtherActor))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, "Player Begin Overlaped with Destination");
-		
+		Player->SetEscapeTimer(EscapeWaitTime_Max);
 	}
 }
 
@@ -48,6 +48,7 @@ void ADestination::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponen
 	if (TObjectPtr<AMyPlayer> Player = Cast<AMyPlayer>(OtherActor))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, "Player End Overlaped with Destination");
+		Player->CancleEscapeTimer();
 	}
 }
 

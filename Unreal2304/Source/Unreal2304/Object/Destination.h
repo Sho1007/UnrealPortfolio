@@ -31,6 +31,10 @@ private:
 	void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 private:
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
+	FName DestinaionName;
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> BoxComponent;
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float EscapeWaitTime_Max;
 };

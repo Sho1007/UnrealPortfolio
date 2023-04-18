@@ -88,6 +88,34 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Tab", EInputEvent::IE_Pressed, this, &AMyPlayer::TabPressed);
 }
 
+void AMyPlayer::SetEscapeTimer(const float NewEscapeTime)
+{
+	EscapeWaitTime_Current = NewEscapeTime;
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Escape Timer : %f"), EscapeWaitTime_Current));
+	GetWorldTimerManager().SetTimer(EscapeTimerHandle, this, &AMyPlayer::EscapeTimer, 0.1f, true, 0.1f);
+}
+
+void AMyPlayer::CancleEscapeTimer()
+{
+	GetWorldTimerManager().ClearTimer(EscapeTimerHandle);
+}
+
+void AMyPlayer::EscapeTimer()
+{
+	EscapeWaitTime_Current = FMath::Max(EscapeWaitTime_Current - 0.1f, 0.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Escape Timer : %f"), EscapeWaitTime_Current));
+	if (EscapeWaitTime_Current <= 0.0f)
+	{
+		GetWorldTimerManager().ClearTimer(EscapeTimerHandle);
+		Escape();
+	}
+}
+
+void AMyPlayer::Escape()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("Escaped!")));
+}
+
 void AMyPlayer::CheckInteract()
 {
 
