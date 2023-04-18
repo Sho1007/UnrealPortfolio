@@ -20,7 +20,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void SetEscapeTimer();
+	void CancleEscapeTimer();
 private:
+	void Escape();
 	void CheckInteract();
 	void CreateMenuBoxWidget(TObjectPtr<TArray<FText>> MenuText);
 	void DeleteMenuBoxWidget();
@@ -67,4 +71,10 @@ private:
 	// HUD Widget Var
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 	TObjectPtr<UHUDWidget> HUDWidget;
+
+	// Escape Var
+	float EscapeWaitTime_Current;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float EscapeWaitTime_Max;
+	FTimerHandle EscapeTimerHandle;
 };

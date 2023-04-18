@@ -22,6 +22,7 @@ enum class EMenuType : uint8
 	Size
 };
 
+class UTextBlock;
 class UButton;
 class UWidgetSwitcher;
 UCLASS()
@@ -48,20 +49,33 @@ private:
 private:
 	TArray<TObjectPtr<UButton>> ButtonArray;
 
-
+	FLinearColor ButtonClickedColor = FLinearColor(0.02, 0.02, 0.02, 1);
+	FLinearColor ButtonBaseColor = FLinearColor(0.02, 0.02, 0.02, 1);
 
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_OverAll;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_OverAll;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_Gear;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_Gear;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_Health;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_Health;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_Skills;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_Skills;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_Map;
 	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_Map;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
 	TObjectPtr<UButton> Btn_Tasks;
+	UPROPERTY(meta = (AllowPrivateAccess = true, BindWidget))
+	TObjectPtr<UTextBlock> Txt_Tasks;
 };

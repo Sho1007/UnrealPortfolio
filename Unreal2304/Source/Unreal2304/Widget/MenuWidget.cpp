@@ -21,6 +21,7 @@ void UMenuWidget::OnOverAllButtonClicked()
 	int32 TargetIndex = static_cast<int32>(EMenuType::OverAll);
 	// Todo Here : Play Button Click Sound
 	if (WidgetSwitcher->GetActiveWidgetIndex() == TargetIndex) return;
+	Btn_OverAll->BackgroundColor = ButtonClickedColor;
 	WidgetSwitcher->SetActiveWidgetIndex(TargetIndex);
 }
 
